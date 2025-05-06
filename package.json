@@ -1,0 +1,25 @@
+{
+  "name": "exam",
+  "version": "1.0.0",
+  "description": "A vanilla JavaScript project with Tailwind CSS",
+  "main": "src/js/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielSan-01/exam.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "gh-pages": "^6.3.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.4"
+  }
+}
