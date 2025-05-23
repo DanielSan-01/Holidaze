@@ -1,4 +1,8 @@
-export default {
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
   root: '.',
   publicDir: 'public',
   build: {
@@ -6,6 +10,8 @@ export default {
     emptyOutDir: true,
   },
   server: {
-    open: true
+    port: 5173,
+    open: true,
+    historyApiFallback: true
   }
-} 
+}); 
