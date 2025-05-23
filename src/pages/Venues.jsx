@@ -24,7 +24,7 @@ function Venues() {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div>
+    <div className="max-w-screen-lg mx-auto px-4">
       <h1 className="text-3xl font-bold mb-6">Venues</h1>
       <p className="text-gray-600 mb-6">Browse available venues</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
