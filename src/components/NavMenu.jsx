@@ -38,14 +38,22 @@ function NavMenu() {
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              {user?.venueManager && (
-                <Link to="/venues/manage" className="text-gray-600 hover:text-gray-900">
-                  Manage Venues
-                </Link>
-              )}
+              <Link to="/profile" className="text-gray-600 hover:text-gray-900">
+                Profile
+              </Link>
               <Link to="/bookings" className="text-gray-600 hover:text-gray-900">
                 My Bookings
               </Link>
+              {user?.venueManager && (
+                <>
+                  <Link to="/venues/manage" className="text-gray-600 hover:text-gray-900">
+                    Manage Venues
+                  </Link>
+                  <Link to="/admin" className="text-gray-600 hover:text-gray-900">
+                    Admin
+                  </Link>
+                </>
+              )}
               <button
                 onClick={handleLogout}
                 className="text-gray-600 hover:text-gray-900"
