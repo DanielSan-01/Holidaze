@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth/AuthContext.jsx';
 import AuthModal from '../components/AuthModal.jsx';
+import VenueMap from '../components/VenueMap.jsx';
 
 export default function VenuePage() {
   const { id } = useParams();
@@ -335,22 +336,7 @@ export default function VenuePage() {
           {venue.location && (
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-2">Map</h2>
-              <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-                <div className="text-center">
-                  <div className="text-lg font-medium text-gray-600 mb-2">📍 Location Map</div>
-                  <p className="text-sm text-gray-500">
-                    {[venue.location.address, venue.location.city, venue.location.country]
-                      .filter(Boolean)
-                      .join(', ')}
-                  </p>
-                  {venue.location.lat && venue.location.lng && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      Coordinates: {venue.location.lat}, {venue.location.lng}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-2">Google Maps integration coming soon</p>
-                </div>
-              </div>
+              <VenueMap venue={venue} />
             </div>
           )}
 

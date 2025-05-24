@@ -43,8 +43,8 @@ function NavMenu() {
                   Manage Venues
                 </Link>
               )}
-              <Link to="/bookings" className="text-gray-600 hover:text-gray-900">
-                My Bookings
+              <Link to="/profile" className="text-gray-600 hover:text-gray-900">
+                My Profile
               </Link>
               <button
                 onClick={handleLogout}
