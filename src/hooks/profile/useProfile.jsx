@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { storage } from '../../utils/storage.js';
 
 export const useProfile = () => {
   const { user } = useAuth();
@@ -11,16 +12,15 @@ export const useProfile = () => {
     setLoading(true);
     setError(null);
     
-    const accessToken = localStorage.getItem('accessToken');
-    const apiKey = localStorage.getItem('apiKey');
-
-    if (!accessToken || !apiKey || !user || !user.name) {
+    if (!storage.hasCompleteAuth() || !user?.name) {
       setError('Missing access token, API key, or user information');
       setLoading(false);
       return;
     }
 
     try {
+      const { accessToken, apiKey } = storage.getAuthData();
+      
       const queryParams = new URLSearchParams();
       if (options._bookings) queryParams.append('_bookings', 'true');
       if (options._venues) queryParams.append('_venues', 'true');
@@ -54,16 +54,15 @@ export const useProfile = () => {
     setLoading(true);
     setError(null);
     
-    const accessToken = localStorage.getItem('accessToken');
-    const apiKey = localStorage.getItem('apiKey');
-
-    if (!accessToken || !apiKey || !user) {
+    if (!storage.hasCompleteAuth() || !user) {
       setError('Missing access token, API key, or user information');
       setLoading(false);
       return;
     }
 
     try {
+      const { accessToken, apiKey } = storage.getAuthData();
+
       const res = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/${name}`, {
         method: 'PUT',
         headers: {
@@ -96,16 +95,15 @@ export const useProfile = () => {
     setLoading(true);
     setError(null);
     
-    const accessToken = localStorage.getItem('accessToken');
-    const apiKey = localStorage.getItem('apiKey');
-
-    if (!accessToken || !apiKey) {
+    if (!storage.hasCompleteAuth()) {
       setError('Missing access token or API key');
       setLoading(false);
       return;
     }
 
     try {
+      const { accessToken, apiKey } = storage.getAuthData();
+
       const res = await fetch('https://v2.api.noroff.dev/holidaze/profiles', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,

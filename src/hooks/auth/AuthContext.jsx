@@ -1,27 +1,26 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { storage } from '../../utils/storage.js';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState(() => storage.getUser());
 
-  // Listen for localStorage changes (from registration)
-  const syncUserFromStorage = useCallback(() => {
-    const stored = localStorage.getItem('user');
-    const newUser = stored ? JSON.parse(stored) : null;
-    if (JSON.stringify(newUser) !== JSON.stringify(user)) {
-      setUser(newUser);
-    }
-  }, [user]);
+  // Method to manually sync user state (called after registration)
+  const syncUserState = useCallback(() => {
+    const currentUser = storage.getUser();
+    setUser(currentUser);
+  }, []);
 
-  // Check for user updates from registration
+  // Listen for auth state changes (from registration)
   React.useEffect(() => {
-    const interval = setInterval(syncUserFromStorage, 1000);
-    return () => clearInterval(interval);
-  }, [syncUserFromStorage]);
+    const handleAuthChange = () => {
+      syncUserState();
+    };
+
+    window.addEventListener('auth-state-changed', handleAuthChange);
+    return () => window.removeEventListener('auth-state-changed', handleAuthChange);
+  }, [syncUserState]);
 
   const login = useCallback(async (email, password) => {
     const res = await fetch('https://v2.api.noroff.dev/auth/login', {
@@ -34,8 +33,8 @@ export function AuthProvider({ children }) {
       throw new Error(err.message || 'Failed to login');
     }
     const data = await res.json();
-    localStorage.setItem('user', JSON.stringify(data.data));
-    localStorage.setItem('accessToken', data.data.accessToken);
+    storage.setUser(data.data);
+    storage.setAccessToken(data.data.accessToken);
     setUser(data.data);
     return data;
   }, []);
@@ -60,14 +59,12 @@ export function AuthProvider({ children }) {
   }, [login]);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('apiKey');
+    storage.clearAuth();
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout, syncUserState }}>
       {children}
     </AuthContext.Provider>
   );

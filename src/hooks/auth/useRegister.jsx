@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { storage } from '../../utils/storage.js';
 
 export function useRegister() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,8 +33,8 @@ export function useRegister() {
       }
 
       const loginData = await loginResponse.json();
-      localStorage.setItem('user', JSON.stringify(loginData.data));
-      localStorage.setItem('accessToken', loginData.data.accessToken);
+      storage.setUser(loginData.data);
+      storage.setAccessToken(loginData.data.accessToken);
 
       const apiKeyResponse = await fetch('https://v2.api.noroff.dev/auth/create-api-key', {
         method: 'POST',
@@ -50,11 +51,14 @@ export function useRegister() {
 
       const apiKeyData = await apiKeyResponse.json();
       console.log('API key created:', apiKeyData);
-      localStorage.setItem('apiKey', apiKeyData.data.key);
+      storage.setApiKey(apiKeyData.data.key);
+
+      // Dispatch custom event to notify AuthContext to sync
+      window.dispatchEvent(new CustomEvent('auth-state-changed'));
 
     } catch (error) {
       console.error('Registration error:', error);
-      throw error; // Re-throw so UI can handle it
+      throw error;
     } finally {
       setIsSubmitting(false);
     }
