@@ -20,7 +20,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto mt-16 text-center">
+    <div className="max-w-screen-xl mx-auto mt-16 text-center">
       <h1 className="text-4xl font-bold mb-4">Welcome to Holidaze</h1>
       <p className="text-xl text-gray-600 mb-8">Find your perfect holiday accommodation</p>
       {loading && <div>Loading venues...</div>}

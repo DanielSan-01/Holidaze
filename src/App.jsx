@@ -1,15 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext.jsx';
+import { AuthProvider } from './hooks/auth/AuthContext.jsx';
 import NavMenu from './components/NavMenu.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
 import Venues from './pages/Venues.jsx';
 import Bookings from './pages/Bookings.jsx';
 import VenueManagement from './pages/VenueManagement.jsx';
-import NotFound from './pages/NotFound.jsx';
+import FourOhFour from './pages/404.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
@@ -21,8 +19,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/venues" element={<Venues />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
             <Route
               path="/bookings"
               element={
@@ -39,7 +35,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/404" element={<NotFound />} />
+            <Route path="/404" element={<FourOhFour />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </main>
