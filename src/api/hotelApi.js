@@ -6,6 +6,7 @@ export async function fetchHotels() {
         const json = await response.json();
         // Adapt the data to match HotelCard's expected structure
         return json.data.map(hotel => ({
+            id: hotel.id,
             name: hotel.name,
             location: hotel.location?.city || "Unknown",
             price: hotel.price,
