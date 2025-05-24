@@ -27,11 +27,11 @@ export default function Profile() {
   };
 
   const handleBookingClick = (booking) => {
-    navigate(`/venues/${booking.venue.id}`);
+    navigate(`/venue/${booking.venue.id}`);
   };
 
   const handleVenueClick = (venueId) => {
-    navigate(`/venues/${venueId}`);
+    navigate(`/venue/${venueId}`);
   };
 
   // Check if user owns a venue (using real API data structure)
@@ -217,14 +217,14 @@ export default function Profile() {
       {/* Conditional Section: My Venues (for venue managers) OR My Previous Visits (for regular users) */}
       {profile.venueManager ? (
         // Venue Manager View: My Venues
-        ownedVenues.length > 0 && (
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">My Venues</h3>
-              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm">
-                + Add New Venue
-              </button>
-            </div>
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">My Venues</h3>
+            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm">
+              + Add New Venue
+            </button>
+          </div>
+          {ownedVenues.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {ownedVenues.map((venue) => (
                 <div 
@@ -255,8 +255,13 @@ export default function Profile() {
                 </div>
               ))}
             </div>
-          </div>
-        )
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p className="mb-2">You haven't created any venues yet.</p>
+              <p className="text-sm">Click the "Add New Venue" button above to get started!</p>
+            </div>
+          )}
+        </div>
       ) : (
         // Regular User View: My Previous Visits
         visitedVenues.length > 0 && (
