@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/auth/AuthContext.jsx';
 import AuthModal from './AuthModal.jsx';
 
@@ -7,6 +7,7 @@ function NavMenu() {
   const { user, logout } = useAuth();
   const isAuthenticated = !!user;
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
 
@@ -20,6 +21,10 @@ function NavMenu() {
     setIsAuthModalOpen(true);
   };
 
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <nav className="bg-white py-4">
       <div className="container mx-auto px-4 flex items-center justify-between">
@@ -27,26 +32,41 @@ function NavMenu() {
           <Link to="/" className="text-xl font-semibold">
             Holidaze
           </Link>
-          <Link to="/" className="text-gray-600 hover:text-gray-900">
-            Home
-          </Link>
-          <Link to="/venues" className="text-gray-600 hover:text-gray-900">
+          <Link 
+            to="/venues" 
+            className={`nav-link ${isActive('/venues') ? 'nav-link-active' : ''}`}
+          >
             Venues
+          </Link>
+          <Link 
+            to="/about" 
+            className={`nav-link ${isActive('/about') ? 'nav-link-active' : ''}`}
+          >
+            About us
           </Link>
         </div>
 
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              <Link to="/profile" className="text-gray-600 hover:text-gray-900">
+              <Link 
+                to="/profile" 
+                className={`nav-link ${isActive('/profile') ? 'nav-link-active' : ''}`}
+              >
                 My Profile
               </Link>
               {user?.venueManager && (
                 <>
-                  <Link to="/venues/manage" className="text-gray-600 hover:text-gray-900">
+                  <Link 
+                    to="/venues/manage" 
+                    className={`nav-link ${isActive('/venues/manage') ? 'nav-link-active' : ''}`}
+                  >
                     Manage Venues
                   </Link>
-                  <Link to="/admin" className="text-gray-600 hover:text-gray-900">
+                  <Link 
+                    to="/admin" 
+                    className={`nav-link ${isActive('/admin') ? 'nav-link-active' : ''}`}
+                  >
                     Admin
                   </Link>
                 </>

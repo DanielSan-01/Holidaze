@@ -21,7 +21,27 @@
 
 @layer components {
   .nav-link {
-    @apply text-gray-600 hover:text-gray-900 transition-colors;
+    @apply text-gray-600 hover:text-gray-900 relative transition-all duration-200;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+
+  .nav-link-active::after {
+    background-color: var(--button-main);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .nav-link-active {
+    @apply text-gray-900;
   }
 
   .btn {
@@ -38,9 +58,50 @@
     background-color: var(--button-main-hover);
   }
 
+  .btn-secondary {
+    background-color: var(--button-main);
+    color: white;
+    @apply rounded px-4 py-2 transition-colors;
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--button-main-hover);
+  }
+
+  .btn-outline {
+    border: 2px solid var(--button-main);
+    color: var(--button-main);
+    background-color: transparent;
+    @apply rounded px-4 py-2 transition-all duration-200;
+  }
+
+  .btn-outline:hover {
+    background-color: var(--button-main);
+    color: white;
+  }
+
+  .text-link {
+    color: var(--button-main);
+    @apply hover:underline transition-colors;
+  }
+
+  .text-link:hover {
+    color: var(--button-main-hover);
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    focus-ring-color: var(--focus-ring);
+  }
+
   .input {
-    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-           focus:border-blue-500 focus:ring-blue-500;
+    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2;
+    --tw-ring-color: var(--button-main);
+  }
+
+  .input:focus {
+    border-color: var(--button-main);
+    --tw-ring-color: var(--button-main);
   }
 
   .label {
@@ -51,4 +112,9 @@
 :root {
   --button-main: #2563eb; /* Tailwind's blue-600 by default */
   --button-main-hover: #1d4ed8; /* Tailwind's blue-700 by default */
+  --button-secondary: #3b82f6; /* Tailwind's blue-500 */
+  --button-secondary-hover: #2563eb; /* Tailwind's blue-600 */
+  --text-link: #2563eb; /* Tailwind's blue-600 for links */
+  --text-link-hover: #1d4ed8; /* Tailwind's blue-700 for link hover */
+  --focus-ring: #3b82f6; /* Tailwind's blue-500 for focus rings */
 } 

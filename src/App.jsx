@@ -4,6 +4,7 @@ import { AuthProvider } from './hooks/auth/AuthContext.jsx';
 import NavMenu from './components/NavMenu.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
+import AboutUs from './pages/AboutUs.jsx';
 import Venues from './pages/Venues.jsx';
 import VenuePage from './pages/VenuePage.jsx';
 import Bookings from './pages/Bookings.jsx';
@@ -23,6 +24,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/venues" element={<Venues />} />
             <Route path="/venue/:id" element={<VenuePage />} />
             <Route
