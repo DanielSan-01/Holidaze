@@ -29,7 +29,13 @@
   }
 
   .btn-primary {
-    @apply bg-blue-600 text-white hover:bg-blue-700;
+    background-color: var(--button-main);
+    color: white;
+    @apply rounded px-4 py-2 transition-colors;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--button-main-hover);
   }
 
   .input {
@@ -40,4 +46,9 @@
   .label {
     @apply block text-sm font-medium text-gray-700;
   }
+}
+
+:root {
+  --button-main: #2563eb; /* Tailwind's blue-600 by default */
+  --button-main-hover: #1d4ed8; /* Tailwind's blue-700 by default */
 } 

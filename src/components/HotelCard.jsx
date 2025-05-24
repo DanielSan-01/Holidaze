@@ -39,7 +39,7 @@ function HotelCard({ hotelData }) {
                     ))}
                 </div>
                 <div className="mt-auto pt-4">
-                    <button className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                    <button className="w-full btn-primary">
                         Book Now
                     </button>
                 </div>

@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from '../hooks/auth/AuthContext.jsx';
+import AuthModal from './AuthModal.jsx';
 
 function NavMenu() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const isAuthenticated = !!user;
   const navigate = useNavigate();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const openAuthModal = (mode) => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -47,22 +56,30 @@ function NavMenu() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
+              <button
+                onClick={() => openAuthModal('login')}
                 className="text-gray-600 hover:text-gray-900"
+                type="button"
               >
                 Login
-              </Link>
-              <Link
-                to="/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              </button>
+              <button
+                onClick={() => openAuthModal('register')}
+                className="btn-primary"
+                type="button"
               >
                 Register
-              </Link>
+              </button>
             </>
           )}
         </div>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authMode}
+      />
     </nav>
   );
 }

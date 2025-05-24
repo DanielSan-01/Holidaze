@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function NotFound() {
+function FourOhFour() {
   return (
     <div className="text-center">
       <h1 className="text-4xl font-bold mb-4">404</h1>
@@ -13,4 +13,4 @@ function NotFound() {
   );
 }
 
-export default NotFound; 
+export default FourOhFour; 
