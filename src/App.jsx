@@ -8,6 +8,10 @@ import Venues from './pages/Venues.jsx';
 import VenuePage from './pages/VenuePage.jsx';
 import Bookings from './pages/Bookings.jsx';
 import VenueManagement from './pages/VenueManagement.jsx';
+import Profile from './pages/Profile.jsx';
+import MockProfile from './pages/MockProfile.jsx';
+import EditProfile from './pages/EditProfile.jsx';
+import Admin from './pages/Admin.jsx';
 import FourOhFour from './pages/404.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
@@ -34,6 +38,38 @@ function App() {
               element={
                 <ProtectedRoute>
                   <VenueManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-profile"
+              element={
+                <ProtectedRoute>
+                  <MockProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Admin />
                 </ProtectedRoute>
               }
             />
