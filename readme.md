@@ -1,6 +1,6 @@
-# Vanilla JavaScript Project with Tailwind CSS
+# Holidaze
 
-A simple, modern web application built with vanilla JavaScript and Tailwind CSS.
+
 
 ## Quick Start
 
@@ -30,15 +30,6 @@ npm run preview
 - `npm run build` - Builds for production
 - `npm run preview` - Previews production build locally
 
-## Project Structure
-```
-├── src/              # Source files
-│   ├── css/         # CSS source files
-│   └── js/          # JavaScript source files
-├── public/          # Public files
-│   └── index.html   # Main HTML file
-└── dist/            # Production build output
-```
 
 ## Development
 
