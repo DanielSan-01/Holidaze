@@ -12,8 +12,25 @@ export const useProfile = () => {
     setLoading(true);
     setError(null);
     
+    const authData = storage.getAuthData();
+    console.log('Auth data check:', {
+      hasUser: !!authData.user,
+      hasAccessToken: !!authData.accessToken,
+      hasApiKey: !!authData.apiKey,
+      userName: authData.user?.name,
+      currentUser: user?.name
+    });
+    
     if (!storage.hasCompleteAuth() || !user?.name) {
-      setError('Missing access token, API key, or user information');
+      const missingItems = [];
+      if (!authData.user) missingItems.push('user data');
+      if (!authData.accessToken) missingItems.push('access token');
+      if (!authData.apiKey) missingItems.push('API key');
+      if (!user?.name) missingItems.push('user name from context');
+      
+      const errorMsg = `Missing: ${missingItems.join(', ')}. Please try logging out and logging in again.`;
+      console.error('Profile fetch failed:', errorMsg);
+      setError(errorMsg);
       setLoading(false);
       return;
     }

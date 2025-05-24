@@ -5,6 +5,7 @@ import NavMenu from './components/NavMenu.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Venues from './pages/Venues.jsx';
+import VenuePage from './pages/VenuePage.jsx';
 import Bookings from './pages/Bookings.jsx';
 import VenueManagement from './pages/VenueManagement.jsx';
 import Profile from './pages/Profile.jsx';
@@ -23,6 +24,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/venues" element={<Venues />} />
+            <Route path="/venue/:id" element={<VenuePage />} />
             <Route
               path="/bookings"
               element={

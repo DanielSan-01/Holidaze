@@ -1,0 +1,541 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/auth/AuthContext.jsx';
+import AuthModal from '../components/AuthModal.jsx';
+import VenueMap from '../components/VenueMap.jsx';
+
+export default function VenuePage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [venue, setVenue] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  // Booking form state
+  const [bookingDates, setBookingDates] = useState({
+    dateFrom: '',
+    dateTo: '',
+    guests: 1
+  });
+  const [dateError, setDateError] = useState('');
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
+  const [showAllBookings, setShowAllBookings] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Fetch venue data
+  useEffect(() => {
+    fetchVenue();
+  }, [id]);
+
+  const fetchVenue = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}?_bookings=true`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch venue: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setVenue(data.data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  // Create booking
+  const handleBooking = async () => {
+    setDateError('');
+    
+    // Check if user is logged in
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    // Validate dates
+    if (!bookingDates.dateFrom || !bookingDates.dateTo) {
+      setDateError('Please select both check-in and check-out dates');
+      return;
+    }
+    
+    const checkIn = new Date(bookingDates.dateFrom);
+    const checkOut = new Date(bookingDates.dateTo);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (checkIn < today) {
+      setDateError('Check-in date cannot be in the past');
+      return;
+    }
+    
+    if (checkOut <= checkIn) {
+      setDateError('Check-out date must be after check-in date');
+      return;
+    }
+
+    if (bookingDates.guests > venue.maxGuests) {
+      setDateError(`Maximum ${venue.maxGuests} guests allowed`);
+      return;
+    }
+
+    // Check if dates are available (not overlapping with existing bookings)
+    const isDateAvailable = venue.bookings?.every(booking => {
+      const bookingStart = new Date(booking.dateFrom);
+      const bookingEnd = new Date(booking.dateTo);
+      return (checkOut <= bookingStart || checkIn >= bookingEnd);
+    });
+
+    if (!isDateAvailable) {
+      setDateError('Selected dates are not available');
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+      
+      // Get auth data from localStorage
+      const accessToken = localStorage.getItem('accessToken');
+      const apiKey = localStorage.getItem('apiKey');
+      
+      if (!accessToken) {
+        setDateError('Please log in to make a booking');
+        setBookingLoading(false);
+        return;
+      }
+
+      const bookingPayload = {
+        dateFrom: bookingDates.dateFrom,
+        dateTo: bookingDates.dateTo,
+        guests: parseInt(bookingDates.guests),
+        venueId: id
+      };
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      };
+
+      // Add API key if available
+      if (apiKey) {
+        headers['X-Noroff-API-Key'] = apiKey;
+      }
+
+      const response = await fetch('https://v2.api.noroff.dev/holidaze/bookings', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(bookingPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Booking failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setBookingData(result.data);
+      setBookingSuccess(true);
+      setBookingLoading(false);
+    } catch (err) {
+      setDateError(err.message);
+      setBookingLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBookingDates(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setDateError('');
+  };
+
+  const calculateNights = () => {
+    if (!bookingDates.dateFrom || !bookingDates.dateTo) return 0;
+    const checkIn = new Date(bookingDates.dateFrom);
+    const checkOut = new Date(bookingDates.dateTo);
+    const diffTime = checkOut - checkIn;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const calculateTotal = () => {
+    const nights = calculateNights();
+    return nights * venue?.price * bookingDates.guests;
+  };
+
+  const isDateBooked = (date) => {
+    if (!venue?.bookings) return false;
+    const checkDate = new Date(date);
+    return venue.bookings.some(booking => {
+      const start = new Date(booking.dateFrom);
+      const end = new Date(booking.dateTo);
+      return checkDate >= start && checkDate <= end;
+    });
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="text-center">Loading venue...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="text-red-500 text-center">Error: {error}</div>
+        <button
+          onClick={() => navigate('/venues')}
+          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Back to Venues
+        </button>
+      </div>
+    );
+  }
+
+  if (!venue) {
+    return (
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="text-center">Venue not found</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto p-4">
+      {/* Venue Header */}
+      <div className="mb-6">
+        <button
+          onClick={() => navigate('/venues')}
+          className="text-blue-500 hover:text-blue-700 mb-4"
+        >
+          ← Back to Venues
+        </button>
+        <h1 className="text-3xl font-bold mb-2">{venue.name}</h1>
+        <div className="flex items-center gap-4 text-gray-600 mb-4">
+          <span>User rating {venue.rating}/5</span>
+          <span>Max {venue.maxGuests} guests</span>
+        </div>
+        <p className="text-gray-700 mb-4">{venue.description}</p>
+      </div>
+
+      {/* Images */}
+      {venue.media && venue.media.length > 0 && (
+        <div className="mb-6">
+          {/* Main Image Display */}
+          <div className="relative mb-4">
+            <img
+              src={venue.media[currentImageIndex]?.url}
+              alt={venue.media[currentImageIndex]?.alt || venue.name}
+              className="w-full h-96 object-cover rounded-lg cursor-pointer"
+              onClick={() => {
+                const nextIndex = (currentImageIndex + 1) % venue.media.length;
+                setCurrentImageIndex(nextIndex);
+              }}
+            />
+            
+            {/* Navigation Arrows */}
+            {venue.media.length > 1 && (
+              <>
+                <button
+                  onClick={() => {
+                    const prevIndex = currentImageIndex === 0 ? venue.media.length - 1 : currentImageIndex - 1;
+                    setCurrentImageIndex(prevIndex);
+                  }}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={() => {
+                    const nextIndex = (currentImageIndex + 1) % venue.media.length;
+                    setCurrentImageIndex(nextIndex);
+                  }}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity"
+                >
+                  →
+                </button>
+              </>
+            )}
+            
+            {/* Image Counter */}
+            {venue.media.length > 1 && (
+              <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded">
+                {currentImageIndex + 1} / {venue.media.length}
+              </div>
+            )}
+          </div>
+          
+          {/* Thumbnail Navigation */}
+          {venue.media.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {venue.media.map((image, index) => (
+                <img
+                  key={index}
+                  src={image.url}
+                  alt={image.alt || venue.name}
+                  className={`w-20 h-16 object-cover rounded cursor-pointer flex-shrink-0 transition-opacity ${
+                    index === currentImageIndex 
+                      ? 'ring-2 ring-blue-500 opacity-100' 
+                      : 'opacity-70 hover:opacity-100'
+                  }`}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Venue Details */}
+        <div className="lg:col-span-2">
+          {/* Location */}
+          {venue.location && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Location</h2>
+              <p className="text-gray-700">
+                {[venue.location.address, venue.location.city, venue.location.country]
+                  .filter(Boolean)
+                  .join(', ')}
+              </p>
+            </div>
+          )}
+
+          {/* Amenities */}
+          {venue.meta && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Amenities</h2>
+              <div className="flex flex-wrap gap-2">
+                {venue.meta.wifi && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">📶 WiFi</span>}
+                {venue.meta.parking && <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">🚗 Parking</span>}
+                {venue.meta.breakfast && <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🍳 Breakfast</span>}
+                {venue.meta.pets && <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">🐕 Pets</span>}
+              </div>
+            </div>
+          )}
+
+          {/* Map Section */}
+          {venue.location && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Map</h2>
+              <VenueMap venue={venue} />
+            </div>
+          )}
+
+          {/* Owner */}
+          {venue.owner && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Hosted by</h2>
+              <div className="flex items-center gap-3">
+                {venue.owner.avatar?.url && (
+                  <img
+                    src={venue.owner.avatar.url}
+                    alt={venue.owner.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <p className="font-medium">{venue.owner.name}</p>
+                  {venue.owner.bio && <p className="text-gray-600 text-sm">{venue.owner.bio}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Booking Form */}
+        <div className="lg:col-span-1">
+          <div className="bg-white border rounded-lg p-6 shadow-lg sticky top-4">
+            <h3 className="text-xl font-semibold mb-4">Book Your Stay</h3>
+            
+            {/* Dynamic Pricing Display */}
+            <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+              <div className="text-lg font-semibold text-black">
+                ${venue.price}/night per guest
+              </div>
+              <div className="text-sm text-black">
+                ${venue.price * bookingDates.guests}/night for {bookingDates.guests} guest{bookingDates.guests > 1 ? 's' : ''}
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Check-in Date
+                </label>
+                <input
+                  type="date"
+                  name="dateFrom"
+                  value={bookingDates.dateFrom}
+                  onChange={handleInputChange}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Check-out Date
+                </label>
+                <input
+                  type="date"
+                  name="dateTo"
+                  value={bookingDates.dateTo}
+                  onChange={handleInputChange}
+                  min={bookingDates.dateFrom || new Date().toISOString().split('T')[0]}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Guests
+                </label>
+                <select
+                  name="guests"
+                  value={bookingDates.guests}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {Array.from({ length: venue.maxGuests }, (_, i) => i + 1).map(num => (
+                    <option key={num} value={num}>
+                      {num} guest{num > 1 ? 's' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Booking Summary */}
+              {bookingDates.dateFrom && bookingDates.dateTo && (
+                <div className="bg-gray-50 p-3 rounded">
+                  <div className="flex justify-between text-sm">
+                    <span>{calculateNights()} nights × ${venue.price}</span>
+                    <span>${calculateNights() * venue.price}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>{bookingDates.guests} guests</span>
+                    <span>×{bookingDates.guests}</span>
+                  </div>
+                  <hr className="my-2" />
+                  <div className="flex justify-between font-semibold">
+                    <span>Total</span>
+                    <span>${calculateTotal()}</span>
+                  </div>
+                </div>
+              )}
+
+              {dateError && (
+                <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
+                  {dateError}
+                </div>
+              )}
+
+              <button
+                onClick={handleBooking}
+                disabled={bookingLoading}
+                className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+              >
+                {bookingLoading ? 'Booking...' : 'Book Now'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Existing Bookings Calendar Info */}
+      {venue.bookings && venue.bookings.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold mb-4">Unavailable Dates</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(showAllBookings ? venue.bookings : venue.bookings.slice(0, 6)).map((booking, index) => (
+              <div key={index} className="bg-red-50 border border-red-200 rounded p-3">
+                <p className="text-sm text-red-800">
+                  <strong>Booked:</strong> {formatDate(booking.dateFrom)} - {formatDate(booking.dateTo)}
+                </p>
+                <p className="text-xs text-red-600">
+                  {booking.guests} guest{booking.guests > 1 ? 's' : ''}
+                </p>
+              </div>
+            ))}
+          </div>
+          
+          {venue.bookings.length > 6 && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowAllBookings(!showAllBookings)}
+                className="text-blue-500 hover:text-blue-700 font-medium"
+              >
+                {showAllBookings ? 'Show Less' : `Show More (${venue.bookings.length - 6} more)`}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {bookingSuccess && bookingData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="text-green-500 text-6xl mb-4">✓</div>
+              <h2 className="text-2xl font-bold text-green-600 mb-4">Booking Confirmed!</h2>
+              
+              <div className="bg-gray-50 p-4 rounded mb-4 text-left">
+                <h3 className="font-semibold mb-2">Booking Receipt</h3>
+                <div className="space-y-1 text-sm">
+                  <p><strong>Booking ID:</strong> {bookingData.id}</p>
+                  <p><strong>Venue:</strong> {venue.name}</p>
+                  <p><strong>Check-in:</strong> {formatDate(bookingData.dateFrom)}</p>
+                  <p><strong>Check-out:</strong> {formatDate(bookingData.dateTo)}</p>
+                  <p><strong>Guests:</strong> {bookingData.guests}</p>
+                  <p><strong>Nights:</strong> {calculateNights()}</p>
+                  <p><strong>Total:</strong> ${calculateTotal()}</p>
+                  <p><strong>Booked:</strong> {formatDate(bookingData.created)}</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                >
+                  View My Bookings
+                </button>
+                <button
+                  onClick={() => setBookingSuccess(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
+    </div>
+  );
+} 

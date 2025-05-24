@@ -39,10 +39,7 @@ function NavMenu() {
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="text-gray-600 hover:text-gray-900">
-                Profile
-              </Link>
-              <Link to="/bookings" className="text-gray-600 hover:text-gray-900">
-                My Bookings
+                My Profile
               </Link>
               {user?.venueManager && (
                 <>

@@ -30,11 +30,48 @@ export function AuthProvider({ children }) {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to login');
+      
+      // Provide more specific error messages based on status code
+      let errorMessage;
+      if (res.status === 401) {
+        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (res.status === 400) {
+        errorMessage = err.message || 'Invalid email or password format.';
+      } else if (res.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else {
+        errorMessage = err.message || 'Failed to login. Please try again.';
+      }
+      
+      throw new Error(errorMessage);
     }
     const data = await res.json();
     storage.setUser(data.data);
     storage.setAccessToken(data.data.accessToken);
+    
+    // Create API key after successful login
+    try {
+      const apiKeyResponse = await fetch('https://v2.api.noroff.dev/auth/create-api-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${data.data.accessToken}`,
+        },
+        body: JSON.stringify({ name: data.data.name }),
+      });
+
+      if (apiKeyResponse.ok) {
+        const apiKeyData = await apiKeyResponse.json();
+        storage.setApiKey(apiKeyData.data.key);
+        console.log('API key created during login:', apiKeyData.data.key);
+      } else {
+        console.warn('Failed to create API key during login, but login was successful');
+      }
+    } catch (apiError) {
+      console.warn('API key creation failed during login:', apiError.message);
+      // Don't throw error here - login was successful even if API key creation failed
+    }
+    
     setUser(data.data);
     return data;
   }, []);

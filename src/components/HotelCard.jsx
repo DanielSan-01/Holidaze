@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function HotelCard({ hotelData }) {
     const [imgSrc, setImgSrc] = useState(hotelData.image);
+    const navigate = useNavigate();
+
+    const handleCardClick = () => {
+        navigate(`/venue/${hotelData.id}`);
+    };
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
+        <div 
+            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={handleCardClick}
+        >
             <div className="relative">
                 <img
                     src={imgSrc}
@@ -39,8 +48,14 @@ function HotelCard({ hotelData }) {
                     ))}
                 </div>
                 <div className="mt-auto pt-4">
-                    <button className="w-full btn-primary">
-                        Book Now
+                    <button 
+                        className="w-full btn-primary"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/venue/${hotelData.id}`);
+                        }}
+                    >
+                        View Details
                     </button>
                 </div>
             </div>
