@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLogin } from '../hooks/auth/useLogin.jsx';
 import { useRegister } from '../hooks/auth/useRegister.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const EMAIL_REGEX = /^[^@\s]+@stud\.noroff\.no$/i;
 
@@ -42,8 +42,21 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const { loginUser, isLoading: isLoggingIn } = useLogin();
-  const { registerUser, isSubmitting } = useRegister();
+  const { register, isSubmitting } = useRegister();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSuccessfulAuth = () => {
+    onClose();
+    
+    // If user is on a 404 page, redirect to homepage
+    // Otherwise, let them stay on their current page
+    if (location.pathname === '/404' || location.pathname.includes('404')) {
+      navigate('/');
+    }
+    // If they're on the homepage already, no need to navigate
+    // For other pages, let them stay where they are
+  };
 
   const validate = () => {
     const errors = {};
@@ -89,14 +102,11 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
     if (Object.keys(errors).length > 0) return;
     try {
       if (mode === 'login') {
-        await loginUser(formData.email.trim(), formData.password, () => {
-          onClose();
-          navigate('/');
-        });
+        await loginUser(formData.email.trim(), formData.password, handleSuccessfulAuth);
       } else {
         const avatar = formData.avatar ? { url: formData.avatar, alt: `${formData.name}'s avatar` } : undefined;
         const banner = formData.banner ? { url: formData.banner, alt: `${formData.name}'s banner` } : undefined;
-        await registerUser(
+        await register(
           formData.email.trim(),
           formData.password,
           formData.name,
@@ -105,8 +115,7 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
           banner,
           formData.venueManager
         );
-        onClose();
-        navigate('/');
+        handleSuccessfulAuth();
       }
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -214,39 +223,31 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="venueManager"
-                checked={formData.venueManager}
-                onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label className="ml-2 block text-sm text-gray-700">
-                Register as venue manager
+            <div>
+              <label className="flex items-center text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  name="venueManager"
+                  checked={formData.venueManager}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                I am a venue manager
               </label>
+              <p className="text-xs text-gray-500 mt-1">
+                Check this if you want to manage venues on the platform
+              </p>
             </div>
           </>
         )}
         <button
           type="submit"
-          className="w-full btn-primary"
           disabled={isLoggingIn || isSubmitting}
+          className="w-full bg-blue-500 text-white py-3 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
         >
-          {(isLoggingIn || isSubmitting)
-            ? (mode === 'login' ? 'Signing In...' : 'Registering...')
-            : (mode === 'login' ? 'Sign In' : 'Register')}
+          {isLoggingIn || isSubmitting ? 'Please wait...' : mode === 'login' ? 'Login' : 'Register'}
         </button>
       </form>
-      <p className="mt-4 text-center text-sm text-gray-600">
-        {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-        <button
-          onClick={() => onClose(mode === 'login' ? 'register' : 'login')}
-          className="text-blue-600 hover:text-blue-500"
-        >
-          {mode === 'login' ? 'Sign up' : 'Sign in'}
-        </button>
-      </p>
     </div>
   );
 };
@@ -267,8 +268,31 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => handleClose()}>
-      <AuthForm onClose={handleClose} mode={mode} />
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <AuthForm onClose={onClose} mode={mode} />
+      <div className="text-center mt-4">
+        {mode === 'login' ? (
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <button
+              onClick={() => setMode('register')}
+              className="text-blue-500 hover:underline"
+            >
+              Register here
+            </button>
+          </p>
+        ) : (
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <button
+              onClick={() => setMode('login')}
+              className="text-blue-500 hover:underline"
+            >
+              Login here
+            </button>
+          </p>
+        )}
+      </div>
     </Modal>
   );
 } 

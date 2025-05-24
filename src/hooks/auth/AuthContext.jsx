@@ -8,6 +8,21 @@ export function AuthProvider({ children }) {
     return stored ? JSON.parse(stored) : null;
   });
 
+  // Listen for localStorage changes (from registration)
+  const syncUserFromStorage = useCallback(() => {
+    const stored = localStorage.getItem('user');
+    const newUser = stored ? JSON.parse(stored) : null;
+    if (JSON.stringify(newUser) !== JSON.stringify(user)) {
+      setUser(newUser);
+    }
+  }, [user]);
+
+  // Check for user updates from registration
+  React.useEffect(() => {
+    const interval = setInterval(syncUserFromStorage, 1000);
+    return () => clearInterval(interval);
+  }, [syncUserFromStorage]);
+
   const login = useCallback(async (email, password) => {
     const res = await fetch('https://v2.api.noroff.dev/auth/login', {
       method: 'POST',
@@ -47,6 +62,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('apiKey');
     setUser(null);
   }, []);
 
