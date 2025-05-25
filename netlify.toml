@@ -1,13 +1,15 @@
 [build]
   # Build command for Vite
-  command = "npm run build"
+  command = "npm install && npm run build"
   
   # Directory to publish (Vite outputs to dist by default)
   publish = "dist"
 
 [build.environment]
   # Node version
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
+  # NPM version
+  NPM_VERSION = "10"
 
 # SPA redirect rules for client-side routing
 [[redirects]]
