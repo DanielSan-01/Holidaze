@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
-export default function SearchBar({ onSearch, placeholder = "Search venues...", initialValue = "" }) {
+export default function SearchVenues({ 
+  onSearch, 
+  searchParams = null,
+  setSearchParams = null,
+  placeholder = "Search venues by name, location, or description...",
+  initialValue = ""
+}) {
   const [searchInput, setSearchInput] = useState(initialValue);
 
-  // Update search input when initialValue changes (e.g., from URL params)
+  // Initialize search from URL params
+  useEffect(() => {
+    if (searchParams) {
+      const urlSearch = searchParams.get('search');
+      if (urlSearch && urlSearch !== searchInput) {
+        setSearchInput(urlSearch);
+        onSearch(urlSearch);
+      }
+    }
+  }, [searchParams]);
+
+  // Update search input when initialValue changes
   useEffect(() => {
     setSearchInput(initialValue);
   }, [initialValue]);
@@ -11,12 +28,28 @@ export default function SearchBar({ onSearch, placeholder = "Search venues...", 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchInput(value);
-    onSearch(value); // Real-time search as user types
+    onSearch(value);
+    
+    // Update URL params if provided
+    if (setSearchParams) {
+      const newParams = new URLSearchParams(searchParams);
+      if (value.trim()) {
+        newParams.set('search', value);
+      } else {
+        newParams.delete('search');
+      }
+      setSearchParams(newParams);
+    }
   };
 
   const handleClear = () => {
     setSearchInput('');
     onSearch('');
+    if (setSearchParams) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('search');
+      setSearchParams(newParams);
+    }
   };
 
   return (

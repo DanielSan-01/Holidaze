@@ -1,4 +1,4 @@
-const API_URL = "https://v2.api.noroff.dev/holidaze/venues";
+const API_URL = "https://v2.api.noroff.dev/holidaze/venues?sort=created&sortOrder=desc";
 
 export async function fetchHotels() {
     try {
@@ -16,6 +16,8 @@ export async function fetchHotels() {
             image: hotel.media?.[0]?.url || "https://via.placeholder.com/400x300?text=No+Image",
             media: hotel.media,
             meta: hotel.meta,
+            created: hotel.created,
+            updated: hotel.updated,
             amenities: Object.keys(hotel.meta || {}).filter(key => hotel.meta[key])
         }));
     } catch (error) {

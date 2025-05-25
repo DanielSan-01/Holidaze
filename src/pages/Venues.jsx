@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchHotels } from '../api/hotelApi.js';
 import HotelCard from '../components/HotelCard.jsx';
-import { SearchBar, SearchFilters } from '../components/search';
+import { SearchVenues, FilterVenues, SortVenues } from '../components/search and filters';
+import { filterVenues, hasActiveFilters, sortVenues } from '../utils/venueFilters.js';
 
 function Venues() {
   const [hotels, setHotels] = useState([]);
@@ -11,117 +12,87 @@ function Venues() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({});
+  const [sortBy, setSortBy] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const loadVenues = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchHotels();
+      console.log('Fetched hotels:', data);
+      
+      setHotels(data);
+      setFilteredHotels(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch hotels');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchHotels()
-      .then(data => {
-        console.log('Fetched hotels:', data);
-        setHotels(data);
-        setFilteredHotels(data);
-        setLoading(false);
-        
-        // Initialize search from URL params after data is loaded
-        const urlSearch = searchParams.get('search');
-        if (urlSearch) {
-          setSearchTerm(urlSearch);
-          applyFiltersAndSearch(urlSearch, {});
-        }
-      })
-      .catch(err => {
-        setError('Failed to fetch hotels');
-        setLoading(false);
-      });
+    loadVenues();
   }, []);
+
+  // Apply filters and sorting whenever search term, filters, sort, or venues change
+  useEffect(() => {
+    let result = filterVenues(hotels, searchTerm, filters);
+    result = sortVenues(result, sortBy);
+    setFilteredHotels(result);
+  }, [hotels, searchTerm, filters, sortBy]);
 
   const handleSearch = (newSearchTerm) => {
     setSearchTerm(newSearchTerm);
-    applyFiltersAndSearch(newSearchTerm, filters);
-    
-    // Update URL params
-    const newParams = new URLSearchParams(searchParams);
-    if (newSearchTerm.trim()) {
-      newParams.set('search', newSearchTerm);
-    } else {
-      newParams.delete('search');
-    }
-    setSearchParams(newParams);
   };
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    applyFiltersAndSearch(searchTerm, newFilters);
   };
 
-  const applyFiltersAndSearch = (currentSearchTerm, filterOptions) => {
-    let filtered = [...hotels];
-
-    // Apply search filter
-    if (currentSearchTerm && currentSearchTerm.trim()) {
-      const searchLower = currentSearchTerm.toLowerCase();
-      filtered = filtered.filter(hotel => 
-        hotel.name?.toLowerCase().includes(searchLower) ||
-        hotel.description?.toLowerCase().includes(searchLower) ||
-        hotel.location?.city?.toLowerCase().includes(searchLower) ||
-        hotel.location?.country?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Apply price filters
-    if (filterOptions.minPrice) {
-      filtered = filtered.filter(hotel => hotel.price >= parseFloat(filterOptions.minPrice));
-    }
-    if (filterOptions.maxPrice) {
-      filtered = filtered.filter(hotel => hotel.price <= parseFloat(filterOptions.maxPrice));
-    }
-
-    // Apply guest filter
-    if (filterOptions.maxGuests) {
-      filtered = filtered.filter(hotel => hotel.maxGuests >= parseInt(filterOptions.maxGuests));
-    }
-
-    // Apply amenity filters
-    if (filterOptions.wifi) {
-      filtered = filtered.filter(hotel => hotel.meta?.wifi);
-    }
-    if (filterOptions.parking) {
-      filtered = filtered.filter(hotel => hotel.meta?.parking);
-    }
-    if (filterOptions.breakfast) {
-      filtered = filtered.filter(hotel => hotel.meta?.breakfast);
-    }
-    if (filterOptions.pets) {
-      filtered = filtered.filter(hotel => hotel.meta?.pets);
-    }
-
-    setFilteredHotels(filtered);
+  const handleSort = (newSortBy) => {
+    setSortBy(newSortBy);
   };
 
   const clearAllFilters = () => {
     setSearchTerm('');
     setFilters({});
-    setFilteredHotels(hotels);
+    setSortBy('');
     setSearchParams({});
   };
 
-  const hasActiveSearch = searchTerm.trim().length > 0;
-  const hasActiveFilters = Object.values(filters).some(value => value !== '' && value !== false);
-  const isFiltering = hasActiveSearch || hasActiveFilters;
-
   if (loading) return <div>Loading venues...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+
+  const hasActiveSearch = searchTerm.trim().length > 0;
+  const hasFilters = hasActiveFilters(filters);
+  const isFiltering = hasActiveSearch || hasFilters;
 
   return (
     <div className="max-w-screen-xl mx-auto px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Venues</h1>
       <p className="text-gray-600 mb-6 text-center">Browse available venues</p>
       
-      <SearchBar 
-        onSearch={handleSearch} 
+      <SearchVenues 
+        onSearch={handleSearch}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
         placeholder="Search venues by name, location, or description..."
         initialValue={searchTerm}
       />
-      <SearchFilters onFilterChange={handleFilterChange} filters={filters} />
+      
+      <FilterVenues 
+        onFilterChange={handleFilterChange}
+        filters={filters}
+        onClearFilters={clearAllFilters}
+        onSort={handleSort}
+        currentSort={sortBy}
+      />
+      
+      <SortVenues 
+        onSort={handleSort}
+        currentSort={sortBy}
+      />
       
       {/* Results Header */}
       <div className="flex justify-between items-center mb-4">

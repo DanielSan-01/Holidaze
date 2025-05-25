@@ -7,9 +7,11 @@ import Home from './pages/Home.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Venues from './pages/Venues.jsx';
 import VenuePage from './pages/VenuePage.jsx';
+import { CreateVenuePage, EditVenuePage } from './pages/create';
 import Bookings from './pages/Bookings.jsx';
 import VenueManagement from './pages/VenueManagement.jsx';
-import Profile from './pages/Profile.jsx';
+import Profile from './pages/profile/Profile.jsx';
+import CreateProfile from './pages/profile/CreateProfile.jsx';
 import MockProfile from './pages/MockProfile.jsx';
 import EditProfile from './pages/EditProfile.jsx';
 import Admin from './pages/Admin.jsx';
@@ -27,6 +29,22 @@ function App() {
             <Route path="/about" element={<AboutUs />} />
             <Route path="/venues" element={<Venues />} />
             <Route path="/venue/:id" element={<VenuePage />} />
+            <Route
+              path="/venues/create"
+              element={
+                <ProtectedRoute>
+                  <CreateVenuePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/venues/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditVenuePage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/bookings"
               element={
@@ -51,6 +69,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/profile/create" element={<CreateProfile />} />
             <Route
               path="/mock-profile"
               element={
