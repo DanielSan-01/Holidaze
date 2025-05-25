@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: '/exam/',
+  base: command === 'build' ? '/exam/' : '/',
   root: '.',
   publicDir: 'public',
   build: {
@@ -15,4 +15,4 @@ export default defineConfig({
     open: true,
     historyApiFallback: true
   }
-}); 
+})); 
