@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCreateVenue } from '../../hooks/venues';
 import { useNavigate } from 'react-router-dom';
 import LocationPicker from './LocationPicker';
+import { sanitizeInput, isValidUrl, validateSearchQuery, encodeHtml } from '../../utils/security.js';
 
 // Image Preview Component
 const ImagePreview = ({ url, alt, index }) => {
@@ -116,13 +117,76 @@ const CreateVenueForm = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
+    // Sanitize all text inputs immediately
+    const sanitizedValue = type === 'text' || type === 'url' || type === 'textarea' 
+      ? sanitizeInput(value) 
+      : value;
+    
+    // Additional validation for URL fields
+    if (type === 'url' && sanitizedValue.length > 0) {
+      // Validate URL format and security
+      if (!isValidUrl(sanitizedValue)) {
+        setFormErrors(prev => ({
+          ...prev,
+          [name]: 'Please enter a valid HTTP/HTTPS URL'
+        }));
+        return; // Don't update state with invalid URL
+      }
+      
+      // Check for dangerous patterns in URLs
+      const dangerousPatterns = [
+        /javascript:/i,
+        /data:/i,
+        /vbscript:/i,
+        /file:/i,
+        /ftp:/i,
+        /<script/i,
+        /on\w+\s*=/i,
+        /eval\s*\(/i,
+        /Function\s*\(/i
+      ];
+      
+      if (dangerousPatterns.some(pattern => pattern.test(sanitizedValue))) {
+        setFormErrors(prev => ({
+          ...prev,
+          [name]: 'URL contains potentially dangerous content'
+        }));
+        return;
+      }
+      
+      // Clear any previous errors for this field
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
+    // Validate text inputs for dangerous patterns
+    if ((type === 'text' || type === 'textarea') && sanitizedValue.length > 0) {
+      if (!validateSearchQuery(sanitizedValue)) {
+        setFormErrors(prev => ({
+          ...prev,
+          [name]: 'Input contains invalid characters or patterns'
+        }));
+        return;
+      }
+      
+      // Clear any previous errors for this field
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
     if (name.startsWith('meta.')) {
       const metaField = name.split('.')[1];
       setFormData(prev => ({
         ...prev,
         meta: {
           ...prev.meta,
-          [metaField]: type === 'checkbox' ? checked : value
+          [metaField]: type === 'checkbox' ? checked : sanitizedValue
         }
       }));
     } else if (name.startsWith('media.')) {
@@ -130,14 +194,60 @@ const CreateVenueForm = () => {
       setFormData(prev => ({
         ...prev,
         media: prev.media.map((item, i) => 
-          i === parseInt(index) ? { ...item, [field]: value } : item
+          i === parseInt(index) ? { ...item, [field]: sanitizedValue } : item
         )
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : (type === 'number' ? Number(value) : value)
+        [name]: type === 'checkbox' ? checked : (type === 'number' ? Number(sanitizedValue) : sanitizedValue)
       }));
+    }
+  };
+
+  // Add paste event handler for URL fields
+  const handlePaste = (e) => {
+    const pastedText = e.clipboardData.getData('text');
+    const fieldName = e.target.name;
+    
+    // If it's a URL field, validate the pasted content
+    if (e.target.type === 'url') {
+      e.preventDefault(); // Prevent default paste
+      
+      const sanitized = sanitizeInput(pastedText);
+      
+      if (!isValidUrl(sanitized)) {
+        setFormErrors(prev => ({
+          ...prev,
+          [fieldName]: 'Pasted content is not a valid URL'
+        }));
+        return;
+      }
+      
+      // Check for dangerous patterns
+      const dangerousPatterns = [
+        /javascript:/i,
+        /data:/i,
+        /vbscript:/i,
+        /file:/i,
+        /ftp:/i,
+        /<script/i,
+        /on\w+\s*=/i,
+        /eval\s*\(/i,
+        /Function\s*\(/i
+      ];
+      
+      if (dangerousPatterns.some(pattern => pattern.test(sanitized))) {
+        setFormErrors(prev => ({
+          ...prev,
+          [fieldName]: 'Pasted URL contains potentially dangerous content'
+        }));
+        return;
+      }
+      
+      // If validation passes, update the field
+      e.target.value = sanitized;
+      handleInputChange(e);
     }
   };
 
@@ -423,8 +533,18 @@ const CreateVenueForm = () => {
                     name={`media.${index}.url`}
                     value={item.url}
                     onChange={handleInputChange}
+                    onPaste={handlePaste}
                     placeholder="Paste image URL here (e.g., https://example.com/image.jpg)"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors[`media.${index}.url`] ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    maxLength={2048} // Reasonable URL length limit
+                    autoComplete="off"
+                    spellCheck="false"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    pattern="https?://.*"
+                    title="Please enter a valid HTTP or HTTPS URL"
                   />
                   {formErrors[`media.${index}.url`] && (
                     <p className="mt-1 text-sm text-red-600">{formErrors[`media.${index}.url`]}</p>
