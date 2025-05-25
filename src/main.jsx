@@ -4,12 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './styles/styles.css';
 
-// Use basename only in production (GitHub Pages)
-const basename = import.meta.env.PROD ? '/exam' : '/';
-
+// Simple setup for Netlify (no basename needed)
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter basename={basename}>
+    <BrowserRouter>
       <App />
     </BrowserRouter>
   </React.StrictMode>
