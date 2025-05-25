@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth';
-import AuthModal from '../components/AuthModal.jsx';
-import VenueMap from '../components/VenueMap.jsx';
-import BookingCalendar from '../components/BookingCalendar.jsx';
+import { PlaneLoader } from '../components/loader';
+import { AuthModal } from '../components/auth';
+import { VenueMap } from '../components/venue';
+import { BookingCalendar } from '../components/booking';
 
 export default function VenuePage() {
   const { id } = useParams();
@@ -190,7 +191,10 @@ export default function VenuePage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto p-4">
-        <div className="text-center">Loading venue...</div>
+        <PlaneLoader 
+          text="Loading venue details..." 
+          size={90}
+        />
       </div>
     );
   }

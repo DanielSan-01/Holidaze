@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/auth';
 import { useProfile } from '../../hooks/profile';
 import { useEditVenue } from '../../hooks/venues';
 import { useVenues } from '../../hooks/venues';
+import { PlaneLoader } from '../../components/loader';
 import EditVenueForm from './EditVenueForm.jsx';
 import DeleteVenueSection from './DeleteVenueSection.jsx';
 
@@ -53,10 +54,10 @@ export default function EditVenuePage() {
   if (profileLoading || venueLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+        <PlaneLoader 
+          text="Loading venue editor..." 
+          size={90}
+        />
       </div>
     );
   }

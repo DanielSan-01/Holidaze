@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAuth, useProfile, useVenueRating } from '../../hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PlaneLoader } from '../../components/loader';
 import ProfileHeader from './components/ProfileHeader.jsx';
 import ProfileStats from './components/ProfileStats.jsx';
 import VenueCard from './components/VenueCard.jsx';
-import VenueRating from '../../components/VenueRating.jsx';
-import CancelBooking from '../../components/CancelBooking.jsx';
+import { VenueRating } from '../../components/venue';
+import { CancelBooking } from '../../components/booking';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -161,10 +162,10 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your profile...</p>
-        </div>
+        <PlaneLoader 
+          text="Loading your profile..." 
+          size={100}
+        />
       </div>
     );
   }
@@ -433,15 +434,7 @@ export default function Profile() {
         </>
       )}
 
-      {/* Debug: Show all ratings (development only) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gray-100 shadow rounded-lg p-6 mt-6">
-          <h3 className="text-lg font-semibold mb-4">Debug: All Ratings (Dev Only)</h3>
-          <div className="text-xs font-mono">
-            <pre>{JSON.stringify(JSON.parse(localStorage.getItem('venueRatings') || '[]'), null, 2)}</pre>
-          </div>
-        </div>
-      )}
+
 
       {/* Cancellation Success Modal */}
       {showCancelSuccessModal && cancelledBookingDetails && (

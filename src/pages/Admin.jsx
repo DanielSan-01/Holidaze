@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useProfile } from '../hooks/profile';
 import { useAuth } from '../hooks/auth';
+import { PlaneLoader } from '../components/loader';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -51,7 +52,10 @@ export default function Admin() {
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto p-4">
-        <div className="text-center">Loading profiles...</div>
+        <PlaneLoader 
+          text="Loading admin dashboard..." 
+          size={100}
+        />
       </div>
     );
   }

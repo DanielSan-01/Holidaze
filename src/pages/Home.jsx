@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchHotels } from '../api/hotelApi.js';
-import HotelCard from '../components/HotelCard.jsx';
+import { VenueCard } from '../components/venue';
+import { PlaneLoader } from '../components/loader';
 import { SearchVenues, FilterVenues } from '../components/search and filters';
 import { filterVenues, hasActiveFilters } from '../utils/venueFilters.js';
 
@@ -105,8 +106,11 @@ function Home() {
       {/* Venues Section */}
       <div className="px-4">
         {loading && (
-          <div className="text-center py-8">
-            <div className="text-lg">Loading venues...</div>
+          <div className="py-8">
+            <PlaneLoader 
+              text="Loading featured venues..." 
+              size={90}
+            />
           </div>
         )}
         
@@ -142,7 +146,7 @@ function Home() {
             {/* Venues Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                   {displayVenues.map((hotel, idx) => (
-                <HotelCard key={hotel.id || idx} hotelData={hotel} />
+                <VenueCard key={hotel.id || idx} hotelData={hotel} />
               ))}
             </div>
 

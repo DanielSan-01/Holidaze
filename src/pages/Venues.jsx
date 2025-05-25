@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchHotels } from '../api/hotelApi.js';
-import HotelCard from '../components/HotelCard.jsx';
+import { VenueCard } from '../components/venue';
+import { PlaneLoader } from '../components/loader';
 import { SearchVenues, FilterVenues, SortVenues } from '../components/search and filters';
 import { filterVenues, hasActiveFilters, sortVenues } from '../utils/venueFilters.js';
 
@@ -61,7 +62,14 @@ function Venues() {
     setSearchParams({});
   };
 
-  if (loading) return <div>Loading venues...</div>;
+  if (loading) return (
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <PlaneLoader 
+        text="Loading venues..." 
+        size={100}
+      />
+    </div>
+  );
   if (error) return <div className="text-red-500">{error}</div>;
 
   const hasActiveSearch = searchTerm.trim().length > 0;
@@ -128,7 +136,7 @@ function Venues() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredHotels.map((hotel, idx) => (
-            <HotelCard key={hotel.id || idx} hotelData={hotel} />
+            <VenueCard key={hotel.id || idx} hotelData={hotel} />
           ))}
         </div>
       )}
