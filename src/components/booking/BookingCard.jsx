@@ -1,5 +1,5 @@
 import React from 'react';
-import { sanitizeInput, encodeHtml } from '../utils/security.js';
+import { sanitizeInput, encodeHtml } from '../../utils/security.js';
 
 const BookingCard = ({ booking, onCancel, onViewVenue }) => {
   // Sanitize all text inputs to prevent XSS

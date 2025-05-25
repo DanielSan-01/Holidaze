@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/auth';
 import { useProfile } from '../hooks/profile';
 import { useNavigate, Link } from 'react-router-dom';
+import { PlaneLoader } from '../components/loader';
 
 export default function EditProfile() {
   const { user } = useAuth();
@@ -130,7 +131,10 @@ export default function EditProfile() {
   if (loading && !profile) {
     return (
       <div className="max-w-2xl mx-auto p-4">
-        <div className="text-center">Loading profile...</div>
+        <PlaneLoader 
+          text="Loading profile editor..." 
+          size={90}
+        />
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/auth';
-import AuthModal from './AuthModal.jsx';
+import { useAuth } from '../../hooks/auth';
+import { AuthModal } from '../auth';
 
 function NavMenu() {
   const { user, logout } = useAuth();

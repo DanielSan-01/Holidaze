@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './hooks/auth';
-import NavMenu from './components/NavMenu.jsx';
-import Footer from './components/Footer.jsx';
+import { NavMenu, Footer } from './components/navigation';
+import { ProtectedRoute } from './components/auth';
 import Home from './pages/Home.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Venues from './pages/Venues.jsx';
@@ -16,7 +16,6 @@ import MockProfile from './pages/MockProfile.jsx';
 import EditProfile from './pages/EditProfile.jsx';
 import Admin from './pages/Admin.jsx';
 import FourOhFour from './pages/404.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
   return (
