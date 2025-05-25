@@ -25,6 +25,15 @@
         console.log('Base URL:', window.location.origin);
         console.log('Pathname:', window.location.pathname);
         console.log('Is production:', typeof window !== 'undefined' && window.location.hostname !== 'localhost');
+        
+        // Add loading timeout to detect if React app fails to load
+        setTimeout(function() {
+            var root = document.getElementById('root');
+            if (root && root.innerHTML.trim() === '') {
+                console.error('React app failed to load after 5 seconds');
+                root.innerHTML = '<div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;"><h1>Loading...</h1><p>If this message persists, there may be an issue with the application.</p><p>Check the browser console for errors.</p></div>';
+            }
+        }, 5000);
     </script>
 </head>
 <body class="bg-gray-100 min-h-screen">
