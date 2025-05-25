@@ -9,10 +9,22 @@ function HotelCard({ hotelData }) {
         navigate(`/venue/${hotelData.id}`);
     };
 
+    // Format location from object to string
+    const formatLocation = (location) => {
+        if (!location) return 'Unknown location';
+        if (typeof location === 'string') return location; // Backward compatibility
+        
+        const parts = [location.city, location.country].filter(Boolean);
+        return parts.length > 0 ? parts.join(', ') : 'Unknown location';
+    };
+
     return (
         <div 
-            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-lg transition-shadow"
+            className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col h-full cursor-pointer transform hover:scale-[1.02]"
             onClick={handleCardClick}
+            style={{
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+            }}
         >
             <div className="relative">
                 <img
@@ -35,7 +47,7 @@ function HotelCard({ hotelData }) {
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
                     </div>
                 </div>
-                <p className="text-gray-600 mt-1 truncate">{hotelData.location}</p>
+                <p className="text-gray-600 mt-1 truncate">{formatLocation(hotelData.location)}</p>
                 <div className="mt-2">
                     <span className="text-green-600 font-semibold">${hotelData.price}</span>
                     <span className="text-gray-500 text-sm"> / night</span>
