@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../hooks/auth/AuthContext.jsx';
-import { useProfile } from '../hooks/profile/useProfile.jsx';
-import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/auth/AuthContext.jsx';
+import { useProfile } from '../../hooks/profile/useProfile.jsx';
+import { useNavigate } from 'react-router-dom';
+import ProfileHeader from './components/ProfileHeader.jsx';
+import ProfileStats from './components/ProfileStats.jsx';
+import VenueCard from './components/VenueCard.jsx';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -32,6 +35,10 @@ export default function Profile() {
 
   const handleVenueClick = (venueId) => {
     navigate(`/venue/${venueId}`);
+  };
+
+  const handleCreateVenue = () => {
+    navigate('/venues/create');
   };
 
   // Check if user owns a venue (using real API data structure)
@@ -119,69 +126,14 @@ export default function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      <ProfileHeader profile={profile} />
+      
       <div className="bg-white shadow rounded-lg p-6 mb-6">
-        {/* Profile Header */}
-        <div className="flex justify-between items-start mb-6">
-          <h1 className="text-2xl font-bold">Profile</h1>
-          <Link
-            to="/profile/edit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Edit Profile
-          </Link>
-        </div>
-
-        {/* Banner */}
-        {profile.banner?.url && (
-          <div className="mb-6">
-            <img
-              src={profile.banner.url}
-              alt={profile.banner.alt || 'Profile banner'}
-              className="w-full h-32 object-cover rounded"
-            />
-          </div>
-        )}
-
-        {/* Profile Info */}
-        <div className="flex items-start space-x-4 mb-6">
-          {profile.avatar?.url && (
-            <img
-              src={profile.avatar.url}
-              alt={profile.avatar.alt || 'Profile avatar'}
-              className="w-20 h-20 rounded-full object-cover"
-            />
-          )}
-          <div>
-            <h2 className="text-xl font-semibold">{profile.name}</h2>
-            <p className="text-gray-600">{profile.email}</p>
-            {profile.bio && <p className="mt-2">{profile.bio}</p>}
-            <p className="mt-2">
-              <span className={`inline-block px-2 py-1 rounded text-sm ${
-                profile.venueManager 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
-                {profile.venueManager ? 'Venue Manager' : 'Customer'}
-              </span>
-            </p>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-gray-50 p-4 rounded">
-            <h3 className="font-semibold">Bookings</h3>
-            <p className="text-2xl font-bold">{profile._count?.bookings || 0}</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded">
-            <h3 className="font-semibold">
-              {profile.venueManager ? 'Venues Owned' : 'Places Visited'}
-            </h3>
-            <p className="text-2xl font-bold">
-              {profile.venueManager ? ownedVenues.length : visitedVenues.length}
-            </p>
-          </div>
-        </div>
+        <ProfileStats 
+          profile={profile} 
+          ownedVenues={ownedVenues} 
+          visitedVenues={visitedVenues} 
+        />
       </div>
 
       {/* Bookings Section */}
@@ -220,39 +172,22 @@ export default function Profile() {
         <div className="bg-white shadow rounded-lg p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">My Venues</h3>
-            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm">
+            <button 
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm" 
+              onClick={handleCreateVenue}
+            >
               + Add New Venue
             </button>
           </div>
           {ownedVenues.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {ownedVenues.map((venue) => (
-                <div 
-                  key={venue.id} 
-                  className="border rounded p-4 cursor-pointer hover:shadow-md transition-shadow relative"
-                  onClick={() => handleVenueClick(venue.id)}
-                >
-                  {/* Owner badge */}
-                  <div className="absolute top-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
-                    Owner
-                  </div>
-                  
-                  {venue.media?.[0]?.url && (
-                    <img
-                      src={venue.media[0].url}
-                      alt={venue.media[0].alt || venue.name}
-                      className="w-full h-32 object-cover rounded mb-2"
-                    />
-                  )}
-                  <h4 className="font-semibold text-blue-600 hover:text-blue-800">{venue.name}</h4>
-                  <p className="text-gray-600 text-sm mb-2">{venue.description}</p>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">${venue.price}/night</span>
-                    <span className="text-sm text-gray-600">
-                      {venue._count?.bookings || 0} bookings
-                    </span>
-                  </div>
-                </div>
+                <VenueCard
+                  key={venue.id}
+                  venue={venue}
+                  onClick={handleVenueClick}
+                  showOwnerBadge={true}
+                />
               ))}
             </div>
           ) : (
@@ -269,31 +204,12 @@ export default function Profile() {
             <h3 className="text-lg font-semibold mb-4">My Previous Visits</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {visitedVenues.map((venue) => (
-                <div 
-                  key={venue.id} 
-                  className="border rounded p-4 cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => handleVenueClick(venue.id)}
-                >
-                  {venue.media?.[0]?.url && (
-                    <img
-                      src={venue.media[0].url}
-                      alt={venue.media[0].alt || venue.name}
-                      className="w-full h-32 object-cover rounded mb-2"
-                    />
-                  )}
-                  <h4 className="font-semibold text-blue-600 hover:text-blue-800">{venue.name}</h4>
-                  <p className="text-gray-600 text-sm mb-2">{venue.description}</p>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">${venue.price}/night</span>
-                    <div className="flex items-center">
-                      <span className="text-yellow-500 mr-1">★</span>
-                      <span className="text-sm text-gray-600">{venue.rating}/5</span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Last visited: {new Date(venue.lastVisited).toLocaleDateString()}
-                  </p>
-                </div>
+                <VenueCard
+                  key={venue.id}
+                  venue={venue}
+                  onClick={handleVenueClick}
+                  showLastVisited={true}
+                />
               ))}
             </div>
           </div>
