@@ -139,26 +139,26 @@ function Home() {
               </div>
             ) : (
               <>
-                {/* Venues Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+            {/* Venues Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                   {displayVenues.map((hotel, idx) => (
-                    <HotelCard key={hotel.id || idx} hotelData={hotel} />
-                  ))}
-                </div>
+                <HotelCard key={hotel.id || idx} hotelData={hotel} />
+              ))}
+            </div>
 
                 {/* Call to Action - only show if not filtering */}
                 {!isFiltering && (
-                  <div className="text-center py-8">
-                    <p className="text-gray-600 mb-4">
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">
                       Discover {hotels.length - displayVenues.length}+ more amazing venues
-                    </p>
-                    <button
-                      onClick={viewAllVenues}
-                      className="btn-primary"
-                    >
-                      Browse All Venues
-                    </button>
-                  </div>
+              </p>
+              <button
+                onClick={viewAllVenues}
+                className="btn-primary"
+              >
+                Browse All Venues
+              </button>
+            </div>
                 )}
               </>
             )}

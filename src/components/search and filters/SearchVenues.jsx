@@ -78,7 +78,7 @@ export default function SearchVenues({
     setError('');
     
     if (typeof onSearch === 'function') {
-      onSearch('');
+    onSearch('');
     }
     
     if (setSearchParams) {
