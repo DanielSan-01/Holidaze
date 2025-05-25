@@ -8,10 +8,14 @@ export async function fetchHotels() {
         return json.data.map(hotel => ({
             id: hotel.id,
             name: hotel.name,
-            location: hotel.location?.city || "Unknown",
+            description: hotel.description,
+            location: hotel.location,
             price: hotel.price,
             rating: hotel.rating,
+            maxGuests: hotel.maxGuests,
             image: hotel.media?.[0]?.url || "https://via.placeholder.com/400x300?text=No+Image",
+            media: hotel.media,
+            meta: hotel.meta,
             amenities: Object.keys(hotel.meta || {}).filter(key => hotel.meta[key])
         }));
     } catch (error) {
