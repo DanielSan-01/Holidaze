@@ -1,7 +1,7 @@
 import React from 'react';
-import CreateVenueForm from '../components/forms/CreateVenueForm';
+import CreateVenueForm from './CreateVenueForm';
 
-const CreateVenue = () => {
+const CreateVenuePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,4 +18,4 @@ const CreateVenue = () => {
   );
 };
 
-export default CreateVenue; 
+export default CreateVenuePage; 

@@ -7,7 +7,7 @@ import Home from './pages/Home.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Venues from './pages/Venues.jsx';
 import VenuePage from './pages/VenuePage.jsx';
-import CreateVenue from './pages/CreateVenue.jsx';
+import { CreateVenuePage, EditVenuePage } from './pages/create';
 import Bookings from './pages/Bookings.jsx';
 import VenueManagement from './pages/VenueManagement.jsx';
 import Profile from './pages/profile/Profile.jsx';
@@ -33,7 +33,15 @@ function App() {
               path="/venues/create"
               element={
                 <ProtectedRoute>
-                  <CreateVenue />
+                  <CreateVenuePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/venues/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditVenuePage />
                 </ProtectedRoute>
               }
             />

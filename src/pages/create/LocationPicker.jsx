@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const SimpleLocationPicker = ({ onLocationSelect, initialLocation = null, className = '' }) => {
+const LocationPicker = ({ onLocationSelect, initialLocation = null, className = '' }) => {
   // Bergen sentrum coordinates
   const bergenSentrum = {
     lat: 60.3913,
@@ -15,9 +15,9 @@ const SimpleLocationPicker = ({ onLocationSelect, initialLocation = null, classN
   const [selectedLocation] = useState(bergenSentrum);
 
   // Auto-select Bergen sentrum on mount
-  React.useEffect(() => {
+  useEffect(() => {
     onLocationSelect(bergenSentrum);
-  }, [onLocationSelect]);
+  }, []);
 
   // Simple Google Maps embed URL (no API key required)
   const mapUrl = `https://maps.google.com/maps?q=${bergenSentrum.lat},${bergenSentrum.lng}&z=14&output=embed`;
@@ -72,4 +72,4 @@ const SimpleLocationPicker = ({ onLocationSelect, initialLocation = null, classN
   );
 };
 
-export default SimpleLocationPicker; 
+export default LocationPicker; 

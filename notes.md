@@ -1426,3 +1426,138 @@ GET/holidaze/venues/search?q=<query>
 Search for venues by their name or description properties.
 
 Edit on GitHub
+
+
+
+docs.noroff.dev
+Noroff API Documentation
+~2 minutes
+
+Noroff APIDocumentation
+
+Holidaze
+Venues
+
+Venues related to Holidaze
+
+Some of these are authenticated endpoints. You can visit authentication to register an account.
+
+These endpoints allow you to retrieve venues.
+
+These endpoints support pagination and sorting. Read more about these features here.
+Prop	Type	Default
+
+id
+	
+
+string
+	-
+
+name
+	
+
+string
+	-
+
+description
+	
+
+string
+	-
+
+media
+	
+
+Array<object>
+	-
+
+price
+	
+
+float
+	-
+
+maxGuests
+	
+
+integer
+	-
+
+rating
+	
+
+float
+	-
+
+created
+	
+
+string
+	-
+
+updated
+	
+
+string
+	-
+
+meta
+	
+
+Object
+	-
+
+location
+	
+
+Object
+	-
+
+Not all of the properties of a venue are returned by default. You can use the following optional query parameters to include additional properties in the response.
+Prop	Type	Default
+
+_owner
+	
+
+boolean
+	false
+
+_bookings
+	
+
+boolean
+	false
+
+This endpoint does not require authentication.
+
+GET/holidaze/venues
+
+Retrieve all venues.
+
+If you want to get all venues by a specific profile, you can use the venues by profile endpoint.
+
+This endpoint does not require authentication.
+
+GET/holidaze/venues/<id>
+
+Retrieve a single venue based on its id.
+
+POST/holidaze/venues
+
+Creation a new venue.
+
+PUT/holidaze/venues/<id>
+
+Updating a venue.
+
+DELETE/holidaze/venues/<id>
+
+Delete a venue based on its id.
+
+Returns an empty 204 No Content response on success.
+
+GET/holidaze/venues/search?q=<query>
+
+Search for venues by their name or description properties.
+
+Edit on GitHub

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 
-export default function SearchFilters({ onFilterChange, filters = {} }) {
+export default function FilterVenues({ onFilterChange, filters = {}, onClearFilters, onSort, currentSort = '' }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState({
     minPrice: '',
     maxPrice: '',
     maxGuests: '',
+    minRating: '',
     wifi: false,
     parking: false,
     breakfast: false,
@@ -24,6 +25,7 @@ export default function SearchFilters({ onFilterChange, filters = {} }) {
       minPrice: '',
       maxPrice: '',
       maxGuests: '',
+      minRating: '',
       wifi: false,
       parking: false,
       breakfast: false,
@@ -31,6 +33,9 @@ export default function SearchFilters({ onFilterChange, filters = {} }) {
     };
     setLocalFilters(emptyFilters);
     onFilterChange(emptyFilters);
+    if (onClearFilters) {
+      onClearFilters();
+    }
   };
 
   const hasActiveFilters = Object.values(localFilters).some(value => 
@@ -66,7 +71,7 @@ export default function SearchFilters({ onFilterChange, filters = {} }) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Price Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Price Range ($)</label>
               <div className="flex space-x-2">
                 <input
                   type="number"
@@ -97,10 +102,41 @@ export default function SearchFilters({ onFilterChange, filters = {} }) {
               />
             </div>
 
+            {/* Rating Filter & Sort */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rating Options</label>
+              <div className="flex space-x-2">
+                <select
+                  value={localFilters.minRating}
+                  onChange={(e) => handleFilterChange('minRating', e.target.value)}
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Any Rating</option>
+                  <option value="4">4+ Stars ⭐⭐⭐⭐</option>
+                  <option value="3">3+ Stars ⭐⭐⭐</option>
+                  <option value="2">2+ Stars ⭐⭐</option>
+                  <option value="1">1+ Stars ⭐</option>
+                </select>
+                <select
+                  value={currentSort}
+                  onChange={(e) => onSort && onSort(e.target.value)}
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Default Order</option>
+                  <option value="rating-high">Rating: High to Low</option>
+                  <option value="rating-low">Rating: Low to High</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="name-asc">Name: A to Z</option>
+                  <option value="guests-high">Max Guests: High to Low</option>
+                </select>
+              </div>
+            </div>
+
             {/* Amenities */}
-            <div className="md:col-span-2">
+            <div className="lg:col-span-4 md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
                   { key: 'wifi', label: '📶 WiFi' },
                   { key: 'parking', label: '🚗 Parking' },

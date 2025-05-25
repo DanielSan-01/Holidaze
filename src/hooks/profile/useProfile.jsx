@@ -12,29 +12,6 @@ export const useProfile = () => {
     setLoading(true);
     setError(null);
     
-    const authData = storage.getAuthData();
-    console.log('Auth data check:', {
-      hasUser: !!authData.user,
-      hasAccessToken: !!authData.accessToken,
-      hasApiKey: !!authData.apiKey,
-      userName: authData.user?.name,
-      currentUser: user?.name
-    });
-    
-    if (!storage.hasCompleteAuth() || !user?.name) {
-      const missingItems = [];
-      if (!authData.user) missingItems.push('user data');
-      if (!authData.accessToken) missingItems.push('access token');
-      if (!authData.apiKey) missingItems.push('API key');
-      if (!user?.name) missingItems.push('user name from context');
-      
-      const errorMsg = `Missing: ${missingItems.join(', ')}. Please try logging out and logging in again.`;
-      console.error('Profile fetch failed:', errorMsg);
-      setError(errorMsg);
-      setLoading(false);
-      return;
-    }
-
     try {
       const { accessToken, apiKey } = storage.getAuthData();
       
@@ -58,6 +35,17 @@ export const useProfile = () => {
 
       const data = await res.json();
       console.log('Fetched profile:', data.data);
+      console.log('🔍 Profile API Debug:', {
+        profileName: data.data?.name,
+        venueManager: data.data?.venueManager,
+        venuesCount: data.data?.venues?.length || 0,
+        venues: data.data?.venues?.map(v => ({
+          id: v.id,
+          name: v.name,
+          ownerName: v.owner?.name
+        })) || [],
+        bookingsCount: data.data?.bookings?.length || 0
+      });
       setProfile(data.data);
       setLoading(false);
     } catch (error) {
