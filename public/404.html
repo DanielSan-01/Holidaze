@@ -12,8 +12,9 @@
         // GitHub Pages SPA redirect
         // Store the current path and redirect to main app
         sessionStorage.redirect = location.href;
+        // Use JavaScript redirect instead of meta refresh
+        window.location.replace('/exam/');
     </script>
-    <meta http-equiv="refresh" content="0;URL='/exam/'">
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div id="root"></div>
