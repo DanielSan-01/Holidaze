@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find your perfect holiday accommodation with Holidaze">
+    <title>Holidaze</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <script>
+        // GitHub Pages SPA redirect handling
+        (function() {
+            var redirect = sessionStorage.redirect;
+            delete sessionStorage.redirect;
+            if (redirect && redirect !== location.href) {
+                console.log('GitHub Pages redirect from:', redirect, 'to:', location.href);
+                history.replaceState(null, null, redirect);
+            }
+        })();
+        
+        // Debug info for GitHub Pages
+        console.log('GitHub Pages Debug Info:');
+        console.log('Current URL:', window.location.href);
+        console.log('Base URL:', window.location.origin);
+        console.log('Pathname:', window.location.pathname);
+        console.log('Is production:', typeof window !== 'undefined' && window.location.hostname !== 'localhost');
+        
+        // Add loading timeout to detect if React app fails to load
+        setTimeout(function() {
+            var root = document.getElementById('root');
+            if (root && root.innerHTML.trim() === '') {
+                console.error('React app failed to load after 5 seconds');
+                root.innerHTML = '<div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;"><h1>Loading...</h1><p>If this message persists, there may be an issue with the application.</p><p>Check the browser console for errors.</p></div>';
+            }
+        }, 5000);
+    </script>
+  <script type="module" crossorigin src="/exam/assets/index-BY_Yxwoi.js"></script>
+  <link rel="stylesheet" crossorigin href="/exam/assets/index-x4d0SJ1Z.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="root"></div>
+</body>
+</html> 
