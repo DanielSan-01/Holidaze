@@ -5,13 +5,20 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProfileHeader from './components/ProfileHeader.jsx';
 import ProfileStats from './components/ProfileStats.jsx';
 import VenueCard from './components/VenueCard.jsx';
+import VenueRating from '../../components/VenueRating.jsx';
+import CancelBooking from '../../components/CancelBooking.jsx';
+import { useVenueRating } from '../../hooks/useVenueRating.js';
 
 export default function Profile() {
   const { user } = useAuth();
   const { profile, loading, error, fetchProfile } = useProfile();
+  const { submitRating, getRating, hasRated } = useVenueRating();
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showVenueSelector, setShowVenueSelector] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [showCancelSuccessModal, setShowCancelSuccessModal] = useState(false);
+  const [cancelledBookingDetails, setCancelledBookingDetails] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +32,13 @@ export default function Profile() {
       }
     }
   }, [user]);
+
+  // Sync bookings state with profile data
+  useEffect(() => {
+    if (profile?.bookings) {
+      setBookings(profile.bookings);
+    }
+  }, [profile?.bookings]);
 
   // Close venue selector when clicking outside
   useEffect(() => {
@@ -72,6 +86,16 @@ export default function Profile() {
     setShowVenueSelector(false);
   };
 
+  const handleRatingSubmit = async (ratingData) => {
+    try {
+      await submitRating(ratingData);
+      console.log('Rating submitted successfully:', ratingData);
+    } catch (error) {
+      console.error('Failed to submit rating:', error);
+      throw error;
+    }
+  };
+
   const toggleVenueSelector = (e) => {
     e.stopPropagation();
     console.log('🔽 Toggle venue selector, current state:', showVenueSelector);
@@ -108,6 +132,22 @@ export default function Profile() {
       created: v.created
     })) || []
   });
+
+  const handleCancelSuccess = (cancelledBookingId) => {
+    // Find the cancelled booking details before removing it
+    const cancelledBooking = bookings.find(booking => booking.id === cancelledBookingId);
+    
+    // Remove the cancelled booking from local state
+    setBookings(prevBookings => 
+      prevBookings.filter(booking => booking.id !== cancelledBookingId)
+    );
+    
+    // Store cancelled booking details and show success modal
+    setCancelledBookingDetails(cancelledBooking);
+    setShowCancelSuccessModal(true);
+    
+    console.log(`Booking ${cancelledBookingId} cancelled successfully`);
+  };
 
   if (!user) {
     return (
@@ -192,29 +232,48 @@ export default function Profile() {
       </div>
 
       {/* Bookings Section */}
-      {profile?.bookings && profile.bookings.length > 0 && (
+      {bookings && bookings.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6 mb-6">
           <h3 className="text-lg font-semibold mb-4">My Bookings</h3>
           <div className="space-y-4">
-            {profile.bookings.map((booking) => (
+            {bookings.map((booking) => (
               <div 
                 key={booking.id} 
-                className="border rounded p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => handleBookingClick(booking)}
+                className="border rounded p-4"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-semibold text-blue-600 hover:text-blue-800">{booking.venue.name}</h4>
-                    <p className="text-gray-600">
-                      {new Date(booking.dateFrom).toLocaleDateString()} - {new Date(booking.dateTo).toLocaleDateString()}
-                    </p>
-                    <p className="text-gray-600">Guests: {booking.guests}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">${booking.venue.price}/night</p>
-                    <p className="text-sm text-green-600 font-medium">✓ Confirmed</p>
+                <div 
+                  className="cursor-pointer hover:bg-gray-50 transition-colors rounded p-2 -m-2"
+                  onClick={() => handleBookingClick(booking)}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold text-blue-600 hover:text-blue-800">{booking.venue.name}</h4>
+                      <p className="text-gray-600">
+                        {new Date(booking.dateFrom).toLocaleDateString()} - {new Date(booking.dateTo).toLocaleDateString()}
+                      </p>
+                      <p className="text-gray-600">Guests: {booking.guests}</p>
+                      {/* Cancel Link positioned under guests info */}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <CancelBooking 
+                          booking={booking}
+                          onCancelSuccess={handleCancelSuccess}
+                        />
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">${booking.venue.price}/night</p>
+                      <p className="text-sm text-green-600 font-medium">✓ Confirmed</p>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Rating Component */}
+                <VenueRating 
+                  booking={booking}
+                  onRatingSubmit={handleRatingSubmit}
+                  disabled={false}
+                  existingRating={getRating(booking.id)}
+                />
               </div>
             ))}
           </div>
@@ -374,6 +433,61 @@ export default function Profile() {
             </div>
           )}
         </>
+      )}
+
+      {/* Debug: Show all ratings (development only) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-gray-100 shadow rounded-lg p-6 mt-6">
+          <h3 className="text-lg font-semibold mb-4">Debug: All Ratings (Dev Only)</h3>
+          <div className="text-xs font-mono">
+            <pre>{JSON.stringify(JSON.parse(localStorage.getItem('venueRatings') || '[]'), null, 2)}</pre>
+          </div>
+        </div>
+      )}
+
+      {/* Cancellation Success Modal */}
+      {showCancelSuccessModal && cancelledBookingDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="text-green-500 text-6xl mb-4">✅</div>
+              <h2 className="text-2xl font-bold text-green-600 mb-4">Booking Cancelled!</h2>
+              
+              <div className="bg-gray-50 p-4 rounded mb-4 text-left">
+                <h3 className="font-semibold mb-2">Cancelled Booking</h3>
+                <div className="space-y-1 text-sm">
+                  <p><strong>Venue:</strong> {cancelledBookingDetails.venue.name}</p>
+                  <p><strong>Dates:</strong> {new Date(cancelledBookingDetails.dateFrom).toLocaleDateString()} - {new Date(cancelledBookingDetails.dateTo).toLocaleDateString()}</p>
+                  <p><strong>Guests:</strong> {cancelledBookingDetails.guests}</p>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-600 mb-6">
+                <p className="font-medium text-green-600 mb-2">✅ Successfully cancelled</p>
+                <p>These dates are now available for other guests to book.</p>
+                <p className="text-xs mt-2">You will not be charged for this booking.</p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate(`/venue/${cancelledBookingDetails.venue.id}`)}
+                  className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                >
+                  View Venue
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCancelSuccessModal(false);
+                    setCancelledBookingDetails(null);
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

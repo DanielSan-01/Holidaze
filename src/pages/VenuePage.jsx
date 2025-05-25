@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth/AuthContext.jsx';
 import AuthModal from '../components/AuthModal.jsx';
 import VenueMap from '../components/VenueMap.jsx';
+import BookingCalendar from '../components/BookingCalendar.jsx';
 
 export default function VenuePage() {
   const { id } = useParams();
@@ -23,7 +24,6 @@ export default function VenuePage() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingData, setBookingData] = useState(null);
-  const [showAllBookings, setShowAllBookings] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Fetch venue data
@@ -156,6 +156,15 @@ export default function VenuePage() {
     setDateError('');
   };
 
+  const handleCalendarDateChange = ({ checkIn, checkOut }) => {
+    setBookingDates(prev => ({
+      ...prev,
+      dateFrom: checkIn,
+      dateTo: checkOut
+    }));
+    setDateError('');
+  };
+
   const calculateNights = () => {
     if (!bookingDates.dateFrom || !bookingDates.dateTo) return 0;
     const checkIn = new Date(bookingDates.dateFrom);
@@ -167,16 +176,6 @@ export default function VenuePage() {
   const calculateTotal = () => {
     const nights = calculateNights();
     return nights * venue?.price * bookingDates.guests;
-  };
-
-  const isDateBooked = (date) => {
-    if (!venue?.bookings) return false;
-    const checkDate = new Date(date);
-    return venue.bookings.some(booking => {
-      const start = new Date(booking.dateFrom);
-      const end = new Date(booking.dateTo);
-      return checkDate >= start && checkDate <= end;
-    });
   };
 
   const formatDate = (dateString) => {
@@ -306,7 +305,7 @@ export default function VenuePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Venue Details */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 flex flex-col">
           {/* Location */}
           {venue.location && (
             <div className="mb-6">
@@ -332,14 +331,6 @@ export default function VenuePage() {
             </div>
           )}
 
-          {/* Map Section */}
-          {venue.location && (
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Map</h2>
-              <VenueMap venue={venue} />
-            </div>
-          )}
-
           {/* Owner */}
           {venue.owner && (
             <div className="mb-6">
@@ -357,6 +348,14 @@ export default function VenuePage() {
                   {venue.owner.bio && <p className="text-gray-600 text-sm">{venue.owner.bio}</p>}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Map Section - Flexible height that adapts to available space */}
+          {venue.location && (
+            <div className="flex-1 flex flex-col min-h-0">
+              <h2 className="text-xl font-semibold mb-2">Map</h2>
+              <VenueMap venue={venue} height="flex-1 min-h-80" />
             </div>
           )}
         </div>
@@ -378,30 +377,15 @@ export default function VenuePage() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Check-in Date
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Select Your Dates
                 </label>
-                <input
-                  type="date"
-                  name="dateFrom"
-                  value={bookingDates.dateFrom}
-                  onChange={handleInputChange}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Check-out Date
-                </label>
-                <input
-                  type="date"
-                  name="dateTo"
-                  value={bookingDates.dateTo}
-                  onChange={handleInputChange}
-                  min={bookingDates.dateFrom || new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <BookingCalendar
+                  bookedDates={venue.bookings || []}
+                  onDateChange={handleCalendarDateChange}
+                  checkIn={bookingDates.dateFrom}
+                  checkOut={bookingDates.dateTo}
+                  minDate={new Date()}
                 />
               </div>
 
@@ -459,36 +443,6 @@ export default function VenuePage() {
           </div>
         </div>
       </div>
-
-      {/* Existing Bookings Calendar Info */}
-      {venue.bookings && venue.bookings.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-xl font-semibold mb-4">Unavailable Dates</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {(showAllBookings ? venue.bookings : venue.bookings.slice(0, 6)).map((booking, index) => (
-              <div key={index} className="bg-red-50 border border-red-200 rounded p-3">
-                <p className="text-sm text-red-800">
-                  <strong>Booked:</strong> {formatDate(booking.dateFrom)} - {formatDate(booking.dateTo)}
-                </p>
-                <p className="text-xs text-red-600">
-                  {booking.guests} guest{booking.guests > 1 ? 's' : ''}
-                </p>
-              </div>
-            ))}
-          </div>
-          
-          {venue.bookings.length > 6 && (
-            <div className="mt-4 text-center">
-              <button
-                onClick={() => setShowAllBookings(!showAllBookings)}
-                className="text-blue-500 hover:text-blue-700 font-medium"
-              >
-                {showAllBookings ? 'Show Less' : `Show More (${venue.bookings.length - 6} more)`}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Success Modal */}
       {bookingSuccess && bookingData && (
