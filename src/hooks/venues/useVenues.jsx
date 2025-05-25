@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../auth/AuthContext.jsx';
+import { useAuth } from '../auth';
 import { storage } from '../../utils/storage.js';
 
 export const useVenues = () => {

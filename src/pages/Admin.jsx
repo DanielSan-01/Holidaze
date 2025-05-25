@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useProfile } from '../hooks/profile/useProfile.jsx';
-import { useAuth } from '../hooks/auth/AuthContext.jsx';
+import { useProfile } from '../hooks/profile';
+import { useAuth } from '../hooks/auth';
 
 export default function Admin() {
   const { user } = useAuth();

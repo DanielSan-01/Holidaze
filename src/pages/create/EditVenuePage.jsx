@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/auth/AuthContext.jsx';
-import { useProfile } from '../../hooks/profile/useProfile.jsx';
-import { useEditVenue } from './hooks/useEditVenue.js';
-import { useVenues } from '../../hooks/venues/useVenues.jsx';
+import { useAuth } from '../../hooks/auth';
+import { useProfile } from '../../hooks/profile';
+import { useEditVenue } from '../../hooks/venues';
+import { useVenues } from '../../hooks/venues';
 import EditVenueForm from './EditVenueForm.jsx';
 import DeleteVenueSection from './DeleteVenueSection.jsx';
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/auth/AuthContext.jsx';
-import { useProfile } from '../hooks/profile/useProfile.jsx';
+import { useAuth } from '../hooks/auth';
+import { useProfile } from '../hooks/profile';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function EditProfile() {

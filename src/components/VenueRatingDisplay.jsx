@@ -1,5 +1,5 @@
 import React from 'react';
-import { useVenueRating } from '../hooks/useVenueRating.js';
+import { useVenueRating } from '../hooks/venues';
 
 /**
  * VenueRatingDisplay Component

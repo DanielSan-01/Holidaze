@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/auth/AuthContext.jsx';
+import { useAuth } from '../hooks/auth';
 import AuthModal from './AuthModal.jsx';
 
 function NavMenu() {

@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../hooks/auth/AuthContext.jsx';
-import { useProfile } from '../../hooks/profile/useProfile.jsx';
+import { useAuth, useProfile, useVenueRating } from '../../hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProfileHeader from './components/ProfileHeader.jsx';
 import ProfileStats from './components/ProfileStats.jsx';
 import VenueCard from './components/VenueCard.jsx';
 import VenueRating from '../../components/VenueRating.jsx';
 import CancelBooking from '../../components/CancelBooking.jsx';
-import { useVenueRating } from '../../hooks/useVenueRating.js';
 
 export default function Profile() {
   const { user } = useAuth();

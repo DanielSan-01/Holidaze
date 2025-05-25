@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLogin } from '../hooks/auth/useLogin.jsx';
-import { useRegister } from '../hooks/auth/useRegister.jsx';
+import { useLogin } from '../hooks/auth';
+import { useRegister } from '../hooks/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const EMAIL_REGEX = /^[^@\s]+@stud\.noroff\.no$/i;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './hooks/auth/AuthContext.jsx';
+import { AuthProvider } from './hooks/auth';
 import NavMenu from './components/NavMenu.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';

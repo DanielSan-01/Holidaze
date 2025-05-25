@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useCreateVenue } from './hooks/useCreateVenue';
+import { useCreateVenue } from '../../hooks/venues';
 import { useNavigate } from 'react-router-dom';
 import LocationPicker from './LocationPicker';
 
