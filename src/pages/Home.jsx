@@ -4,10 +4,12 @@ import { fetchHotels } from '../api/hotelApi.js';
 import { VenueCard } from '../components/venue';
 import { PlaneLoader } from '../components/loader';
 import { SearchVenues, FilterVenues } from '../components/search and filters';
-import { HeroSection, SearchResultsHeader } from '../components/ui';
+import { HeroSection, SearchResultsHeader, PromoBanner } from '../components/ui';
 import { filterVenues, hasActiveFilters } from '../utils/venueFilters.js';
+import { useAuth } from '../hooks/auth';
 
 function Home() {
+  const { user } = useAuth();
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,6 +162,13 @@ function Home() {
           </>
         )}
       </div>
+
+      {/* Promo Banner - only show when not logged in */}
+      {!user && (
+        <div className="px-4 mb-8">
+          <PromoBanner />
+        </div>
+      )}
     </div>
   );
 }
