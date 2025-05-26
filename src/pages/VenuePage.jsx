@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth';
 import { PlaneLoader } from '../components/loader';
 import { AuthModal } from '../components/auth';
-import { VenueMap } from '../components/venue';
+import { ImageGallery, VenueDetails, VenueMap } from '../components/venue';
 import { BookingCalendar } from '../components/booking';
 
 export default function VenuePage() {
@@ -23,9 +23,6 @@ export default function VenuePage() {
   });
   const [dateError, setDateError] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingData, setBookingData] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Fetch venue data
   useEffect(() => {
@@ -139,9 +136,15 @@ export default function VenuePage() {
       }
 
       const result = await response.json();
-      setBookingData(result.data);
-      setBookingSuccess(true);
       setBookingLoading(false);
+      
+      // Redirect to profile with booking data for receipt display
+      navigate('/profile', { 
+        state: { 
+          newBooking: result.data,
+          venue: venue 
+        } 
+      });
     } catch (err) {
       setDateError(err.message);
       setBookingLoading(false);
@@ -236,91 +239,20 @@ export default function VenuePage() {
           <span>User rating {venue.rating}/5</span>
           <span>Max {venue.maxGuests} guests</span>
         </div>
-        <p className="text-gray-700 mb-4">{venue.description}</p>
       </div>
 
       {/* Images */}
-      {venue.media && venue.media.length > 0 && (
-        <div className="mb-6">
-          {/* Main Image Display */}
-          <div className="relative mb-4">
-            <img
-              src={venue.media[currentImageIndex]?.url}
-              alt={venue.media[currentImageIndex]?.alt || venue.name}
-              className="w-full h-96 object-cover rounded-lg cursor-pointer"
-              onClick={() => {
-                const nextIndex = (currentImageIndex + 1) % venue.media.length;
-                setCurrentImageIndex(nextIndex);
-              }}
-            />
-            
-            {/* Navigation Arrows */}
-            {venue.media.length > 1 && (
-              <>
-                <button
-                  onClick={() => {
-                    const prevIndex = currentImageIndex === 0 ? venue.media.length - 1 : currentImageIndex - 1;
-                    setCurrentImageIndex(prevIndex);
-                  }}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={() => {
-                    const nextIndex = (currentImageIndex + 1) % venue.media.length;
-                    setCurrentImageIndex(nextIndex);
-                  }}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity"
-                >
-                  →
-                </button>
-              </>
-            )}
-            
-            {/* Image Counter */}
-            {venue.media.length > 1 && (
-              <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded">
-                {currentImageIndex + 1} / {venue.media.length}
-              </div>
-            )}
-          </div>
-          
-          {/* Thumbnail Navigation */}
-          {venue.media.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {venue.media.map((image, index) => (
-                <img
-                  key={index}
-                  src={image.url}
-                  alt={image.alt || venue.name}
-                  className={`w-20 h-16 object-cover rounded cursor-pointer flex-shrink-0 transition-opacity ${
-                    index === currentImageIndex 
-                      ? 'ring-2 ring-blue-500 opacity-100' 
-                      : 'opacity-70 hover:opacity-100'
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      <ImageGallery images={venue.media} venueName={venue.name} />
+
+      {/* Description */}
+      <div className="mb-6">
+        <p className="text-gray-700 text-lg leading-relaxed">{venue.description}</p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Venue Details */}
         <div className="lg:col-span-2 flex flex-col">
-          {/* Location */}
-          {venue.location && (
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Location</h2>
-              <p className="text-gray-700">
-                {[venue.location.address, venue.location.city, venue.location.country]
-                  .filter(Boolean)
-                  .join(', ')}
-              </p>
-            </div>
-          )}
+          {/* Use VenueDetails component */}
 
           {/* Amenities */}
           {venue.meta && (
@@ -448,46 +380,7 @@ export default function VenuePage() {
         </div>
       </div>
 
-      {/* Success Modal */}
-      {bookingSuccess && bookingData && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="text-center">
-              <div className="text-green-500 text-6xl mb-4">✓</div>
-              <h2 className="text-2xl font-bold text-green-600 mb-4">Booking Confirmed!</h2>
-              
-              <div className="bg-gray-50 p-4 rounded mb-4 text-left">
-                <h3 className="font-semibold mb-2">Booking Receipt</h3>
-                <div className="space-y-1 text-sm">
-                  <p><strong>Booking ID:</strong> {bookingData.id}</p>
-                  <p><strong>Venue:</strong> {venue.name}</p>
-                  <p><strong>Check-in:</strong> {formatDate(bookingData.dateFrom)}</p>
-                  <p><strong>Check-out:</strong> {formatDate(bookingData.dateTo)}</p>
-                  <p><strong>Guests:</strong> {bookingData.guests}</p>
-                  <p><strong>Nights:</strong> {calculateNights()}</p>
-                  <p><strong>Total:</strong> ${calculateTotal()}</p>
-                  <p><strong>Booked:</strong> {formatDate(bookingData.created)}</p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                  View My Bookings
-                </button>
-                <button
-                  onClick={() => setBookingSuccess(false)}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Auth Modal */}
       <AuthModal 

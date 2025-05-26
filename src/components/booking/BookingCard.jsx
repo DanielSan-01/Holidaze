@@ -87,10 +87,10 @@ const BookingCard = ({ booking, onCancel, onViewVenue }) => {
       <div className="p-4">
         {/* Venue Name and Location */}
         <div className="mb-3">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1 text-wrap-title">
             {encodeHtml(safeName)}
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 text-wrap-content">
             📍 {encodeHtml(safeLocation)}
           </p>
         </div>

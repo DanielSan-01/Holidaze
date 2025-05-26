@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/auth';
 import { AuthModal } from '../auth';
+import HamburgerButton from './HamburgerButton';
+import DesktopNav from './DesktopNav';
+import AuthSection from './AuthSection';
+import MobileMenu from './MobileMenu';
 
 function NavMenu() {
   const { user, logout } = useAuth();
@@ -10,94 +14,76 @@ function NavMenu() {
   const location = useLocation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+    setIsMobileMenuOpen(false); // Close mobile menu after logout
   };
 
   const openAuthModal = (mode) => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
+    setIsMobileMenuOpen(false); // Close mobile menu when opening auth modal
   };
 
   const isActive = (path) => {
     return location.pathname === path;
   };
 
+  const handleLinkClick = () => {
+    setIsMobileMenuOpen(false); // Close mobile menu when navigating
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <nav className="bg-white py-4">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center space-x-6">
-          <Link to="/" className="text-xl font-semibold">
-            Holidaze
-          </Link>
-          <Link 
-            to="/venues" 
-            className={`nav-link ${isActive('/venues') ? 'nav-link-active' : ''}`}
-          >
-            Venues
-          </Link>
-          <Link 
-            to="/about" 
-            className={`nav-link ${isActive('/about') ? 'nav-link-active' : ''}`}
-          >
-            About us
-          </Link>
+    <nav className="bg-white py-4 shadow-sm">
+      <div className="container mx-auto px-4">
+        {/* Desktop and Mobile Header */}
+        <div className="flex items-center justify-between">
+          {/* Left side: Logo and Desktop Navigation */}
+          <div className="flex items-center space-x-8">
+            {/* Logo */}
+            <Link to="/" className="text-xl font-semibold" onClick={handleLinkClick}>
+              Holidaze
+            </Link>
+
+            {/* Desktop Navigation */}
+            <DesktopNav isActive={isActive} />
+          </div>
+
+          {/* Right side: Desktop Auth Section */}
+          <AuthSection
+            isAuthenticated={isAuthenticated}
+            user={user}
+            isActive={isActive}
+            onLogout={handleLogout}
+            onOpenAuthModal={openAuthModal}
+            onLinkClick={handleLinkClick}
+            isMobile={false}
+          />
+
+          {/* Mobile Hamburger Button */}
+          <HamburgerButton
+            isOpen={isMobileMenuOpen}
+            onClick={toggleMobileMenu}
+          />
         </div>
 
-        <div className="flex items-center space-x-4">
-          {isAuthenticated ? (
-            <>
-              <Link 
-                to="/profile" 
-                className={`nav-link ${isActive('/profile') ? 'nav-link-active' : ''}`}
-              >
-                My Profile
-              </Link>
-              {user?.venueManager && (
-                <>
-                  <Link 
-                    to="/venues/manage" 
-                    className={`nav-link ${isActive('/venues/manage') ? 'nav-link-active' : ''}`}
-                  >
-                    Manage Venues
-                  </Link>
-                  <Link 
-                    to="/admin" 
-                    className={`nav-link ${isActive('/admin') ? 'nav-link-active' : ''}`}
-                  >
-                    Admin
-                  </Link>
-                </>
-              )}
-              <button
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
-                type="button"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => openAuthModal('login')}
-                className="text-gray-600 hover:text-gray-900"
-                type="button"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => openAuthModal('register')}
-                className="btn-primary"
-                type="button"
-              >
-                Register
-              </button>
-            </>
-          )}
-        </div>
+        {/* Mobile Menu */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          isActive={isActive}
+          onLinkClick={handleLinkClick}
+          isAuthenticated={isAuthenticated}
+          user={user}
+          onLogout={handleLogout}
+          onOpenAuthModal={openAuthModal}
+        />
       </div>
 
       <AuthModal

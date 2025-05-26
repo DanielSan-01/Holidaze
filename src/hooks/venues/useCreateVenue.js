@@ -77,7 +77,7 @@ export const useCreateVenue = () => {
     if (formData.media) {
       formData.media.forEach((item, index) => {
         if (item.url && !isValidUrl(item.url)) {
-          errors[`media.${index}.url`] = 'Please enter a valid image URL';
+          errors[`media.${index}.url`] = 'We really recommend you at least have 1 photo of your venue to attract customers.';
         }
       });
     }

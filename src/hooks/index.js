@@ -8,4 +8,7 @@ export * from './auth';
 export * from './profile';
 
 // Venue hooks
-export * from './venues'; 
+export * from './venues';
+
+// Booking hooks
+export { useBookingReceipt } from './useBookingReceipt'; 

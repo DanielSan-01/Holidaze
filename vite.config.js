@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: command === 'build' ? '/exam/' : '/',
+  base: '/', // Use root path for Netlify
   root: '.',
   publicDir: 'public',
   build: {
