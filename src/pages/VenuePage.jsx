@@ -252,7 +252,17 @@ export default function VenuePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Venue Details */}
         <div className="lg:col-span-2 flex flex-col">
-          {/* Use VenueDetails component */}
+          {/* Location */}
+          {venue.location && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Location</h2>
+              <p className="text-gray-700">
+                {[venue.location.address, venue.location.city, venue.location.country]
+                  .filter(Boolean)
+                  .join(', ')}
+              </p>
+            </div>
+          )}
 
           {/* Amenities */}
           {venue.meta && (
@@ -266,6 +276,8 @@ export default function VenuePage() {
               </div>
             </div>
           )}
+
+
 
           {/* Owner */}
           {venue.owner && (

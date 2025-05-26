@@ -1,4 +1,35 @@
 /**
+ * Check if a venue is available for the specified date range
+ * @param {Object} venue - Venue object with bookings
+ * @param {string} checkIn - Check-in date (YYYY-MM-DD)
+ * @param {string} checkOut - Check-out date (YYYY-MM-DD)
+ * @returns {boolean} True if venue is available
+ */
+export const isVenueAvailable = (venue, checkIn, checkOut) => {
+  if (!checkIn || !checkOut || !venue.bookings) {
+    return true; // If no dates specified or no bookings, consider available
+  }
+
+  const requestedCheckIn = new Date(checkIn);
+  const requestedCheckOut = new Date(checkOut);
+
+  // Check if requested dates are valid
+  if (requestedCheckIn >= requestedCheckOut) {
+    return false; // Invalid date range
+  }
+
+  // Check against all existing bookings
+  return venue.bookings.every(booking => {
+    const bookingStart = new Date(booking.dateFrom);
+    const bookingEnd = new Date(booking.dateTo);
+    
+    // Venue is available if requested dates don't overlap with any booking
+    // No overlap if: requested checkout <= booking start OR requested checkin >= booking end
+    return requestedCheckOut <= bookingStart || requestedCheckIn >= bookingEnd;
+  });
+};
+
+/**
  * Apply search and filter criteria to a list of venues
  * @param {Array} venues - Array of venue objects
  * @param {string} searchTerm - Search term to filter by
@@ -49,6 +80,11 @@ export const filterVenues = (venues, searchTerm = '', filters = {}) => {
   }
   if (filters.pets) {
     filtered = filtered.filter(venue => venue.meta?.pets);
+  }
+
+  // Apply date availability filter
+  if (filters.checkIn && filters.checkOut) {
+    filtered = filtered.filter(venue => isVenueAvailable(venue, filters.checkIn, filters.checkOut));
   }
 
   return filtered;

@@ -79,7 +79,7 @@ function Venues() {
   return (
     <div className="max-w-screen-xl mx-auto px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Venues</h1>
-      <p className="text-gray-600 mb-6 text-center">Browse available venues</p>
+              <p className="text-gray-600 mb-6 text-center">Book your next adventure</p>
       
       <SearchVenues 
         onSearch={handleSearch}

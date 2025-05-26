@@ -28,6 +28,8 @@ export default function VenueDetails({ venue }) {
         </div>
       )}
 
+
+
       {/* Owner */}
       {venue.owner && (
         <div className="mb-6">
