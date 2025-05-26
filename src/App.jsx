@@ -69,14 +69,7 @@ function App() {
               }
             />
             <Route path="/profile/create" element={<CreateProfile />} />
-            <Route
-              path="/mock-profile"
-              element={
-                <ProtectedRoute>
-                  <MockProfile />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/mock-profile" element={<MockProfile />} />
             <Route
               path="/profile/edit"
               element={

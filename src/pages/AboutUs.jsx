@@ -27,7 +27,7 @@ function AboutUs() {
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-3">For Venue Owners</h3>
             <p className="text-gray-700">
-              We provide venue managers with powerful tools to showcase their properties, 
+              We provide a lightweight simple webpage so that venues can be in customers' focus, 
               manage bookings, and connect with guests from around the globe. 
               Join our platform and grow your hospitality business.
             </p>
@@ -74,10 +74,10 @@ function AboutUs() {
               Browse Venues
             </Link>
             <Link 
-              to="/venues" 
+              to="/mock-profile" 
               className="inline-block btn-outline px-6 py-2 rounded-lg transition duration-200"
             >
-              Get Started
+              Try Demo
             </Link>
           </div>
         </div>
