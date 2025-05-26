@@ -271,8 +271,8 @@ export default function VenuePage() {
               <div className="flex flex-wrap gap-2">
                 {venue.meta.wifi && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">📶 WiFi</span>}
                 {venue.meta.parking && <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">🚗 Parking</span>}
-                {venue.meta.breakfast && <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">�� Breakfast</span>}
-                {venue.meta.pets && <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">🐕 Pets</span>}
+                {venue.meta.breakfast && <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🍳 Breakfast</span>}
+                {venue.meta.pets && <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">🐾 Pets</span>}
               </div>
             </div>
           )}
