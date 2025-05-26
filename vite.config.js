@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: '/', // Use root path for GitHub Pages
+  base: command === 'build' ? '/holidaze/' : '/', 
   root: '.',
   publicDir: 'public',
   build: {
