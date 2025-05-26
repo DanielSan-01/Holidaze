@@ -80,22 +80,13 @@ function NavMenu() {
               </button>
             </>
           ) : (
-            <>
-              <button
-                onClick={() => openAuthModal('login')}
-                className="text-gray-600 hover:text-gray-900"
-                type="button"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => openAuthModal('register')}
-                className="btn-primary"
-                type="button"
-              >
-                Register
-              </button>
-            </>
+            <button
+              onClick={() => openAuthModal('login')}
+              className="btn-primary"
+              type="button"
+            >
+              Login/Register
+            </button>
           )}
         </div>
       </div>

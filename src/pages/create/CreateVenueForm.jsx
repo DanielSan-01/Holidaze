@@ -117,10 +117,22 @@ const CreateVenueForm = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    // Sanitize all text inputs immediately
-    const sanitizedValue = type === 'text' || type === 'url' || type === 'textarea' 
-      ? sanitizeInput(value) 
-      : value;
+    // Sanitize all text inputs immediately (but preserve spaces for description)
+    let sanitizedValue = value;
+    if (type === 'text' || type === 'url' || type === 'textarea') {
+      if (name === 'description') {
+        // For description, only remove the most dangerous content but preserve formatting
+        sanitizedValue = value
+          .replace(/[<>]/g, '') // Remove HTML tags
+          .replace(/javascript:/gi, '') // Remove javascript: protocol
+          .replace(/on\w+\s*=/gi, '') // Remove event handlers
+          .replace(/eval\s*\(/gi, '') // Remove eval calls
+          .replace(/Function\s*\(/gi, ''); // Remove Function constructor
+        // Don't trim description to preserve user formatting
+      } else {
+        sanitizedValue = sanitizeInput(value);
+      }
+    }
     
     // Additional validation for URL fields
     if (type === 'url' && sanitizedValue.length > 0) {
@@ -162,14 +174,34 @@ const CreateVenueForm = () => {
       });
     }
     
-    // Validate text inputs for dangerous patterns
+    // Validate text inputs for dangerous patterns (but be more lenient for description)
     if ((type === 'text' || type === 'textarea') && sanitizedValue.length > 0) {
-      if (!validateSearchQuery(sanitizedValue)) {
-        setFormErrors(prev => ({
-          ...prev,
-          [name]: 'Input contains invalid characters or patterns'
-        }));
-        return;
+      // For description field, only check for the most dangerous patterns
+      if (name === 'description') {
+        const dangerousPatterns = [
+          /<script/i,
+          /javascript:/i,
+          /on\w+\s*=/i,
+          /eval\s*\(/i,
+          /Function\s*\(/i
+        ];
+        
+        if (dangerousPatterns.some(pattern => pattern.test(sanitizedValue))) {
+          setFormErrors(prev => ({
+            ...prev,
+            [name]: 'Input contains invalid characters or patterns'
+          }));
+          return;
+        }
+      } else {
+        // For other text fields, use the full validation
+        if (!validateSearchQuery(sanitizedValue)) {
+          setFormErrors(prev => ({
+            ...prev,
+            [name]: 'Input contains invalid characters or patterns'
+          }));
+          return;
+        }
       }
       
       // Clear any previous errors for this field
@@ -205,49 +237,66 @@ const CreateVenueForm = () => {
     }
   };
 
-  // Add paste event handler for URL fields
+  // Add paste event handler for URL fields - mobile-friendly approach
   const handlePaste = (e) => {
-    const pastedText = e.clipboardData.getData('text');
-    const fieldName = e.target.name;
-    
-    // If it's a URL field, validate the pasted content
+    // For URL fields, let the paste happen naturally, then validate after
     if (e.target.type === 'url') {
-      e.preventDefault(); // Prevent default paste
-      
-      const sanitized = sanitizeInput(pastedText);
-      
-      if (!isValidUrl(sanitized)) {
-        setFormErrors(prev => ({
-          ...prev,
-          [fieldName]: 'Pasted content is not a valid URL'
-        }));
-        return;
-      }
-      
-      // Check for dangerous patterns
-      const dangerousPatterns = [
-        /javascript:/i,
-        /data:/i,
-        /vbscript:/i,
-        /file:/i,
-        /ftp:/i,
-        /<script/i,
-        /on\w+\s*=/i,
-        /eval\s*\(/i,
-        /Function\s*\(/i
-      ];
-      
-      if (dangerousPatterns.some(pattern => pattern.test(sanitized))) {
-        setFormErrors(prev => ({
-          ...prev,
-          [fieldName]: 'Pasted URL contains potentially dangerous content'
-        }));
-        return;
-      }
-      
-      // If validation passes, update the field
-      e.target.value = sanitized;
-      handleInputChange(e);
+      // Don't prevent default - let the paste happen
+      // Use setTimeout to validate after the paste completes
+      setTimeout(() => {
+        const pastedValue = e.target.value;
+        const fieldName = e.target.name;
+        
+        if (pastedValue && pastedValue.length > 0) {
+          const sanitized = sanitizeInput(pastedValue);
+          
+          // Check for dangerous patterns
+          const dangerousPatterns = [
+            /javascript:/i,
+            /data:/i,
+            /vbscript:/i,
+            /file:/i,
+            /ftp:/i,
+            /<script/i,
+            /on\w+\s*=/i,
+            /eval\s*\(/i,
+            /Function\s*\(/i
+          ];
+          
+          if (dangerousPatterns.some(pattern => pattern.test(sanitized))) {
+            setFormErrors(prev => ({
+              ...prev,
+              [fieldName]: 'Pasted URL contains potentially dangerous content'
+            }));
+            e.target.value = ''; // Clear the field
+            return;
+          }
+          
+          // If it's a valid URL format, clear any errors
+          if (isValidUrl(sanitized)) {
+            setFormErrors(prev => {
+              const newErrors = { ...prev };
+              delete newErrors[fieldName];
+              return newErrors;
+            });
+            
+            // Update the sanitized value
+            if (sanitized !== pastedValue) {
+              e.target.value = sanitized;
+            }
+            
+            // Trigger the change handler to update state
+            const syntheticEvent = {
+              target: {
+                name: fieldName,
+                value: sanitized,
+                type: 'url'
+              }
+            };
+            handleInputChange(syntheticEvent);
+          }
+        }
+      }, 10); // Small delay to ensure paste completes
     }
   };
 
@@ -538,13 +587,9 @@ const CreateVenueForm = () => {
                     className={`w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
                       formErrors[`media.${index}.url`] ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    maxLength={2048} // Reasonable URL length limit
+                    maxLength={2048}
                     autoComplete="off"
                     spellCheck="false"
-                    autoCorrect="off"
-                    autoCapitalize="off"
-                    pattern="https?://.*"
-                    title="Please enter a valid HTTP or HTTPS URL"
                   />
                   {formErrors[`media.${index}.url`] && (
                     <p className="mt-1 text-sm text-red-600">{formErrors[`media.${index}.url`]}</p>

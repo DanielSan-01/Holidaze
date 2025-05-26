@@ -236,7 +236,6 @@ export default function VenuePage() {
           <span>User rating {venue.rating}/5</span>
           <span>Max {venue.maxGuests} guests</span>
         </div>
-        <p className="text-gray-700 mb-4">{venue.description}</p>
       </div>
 
       {/* Images */}
@@ -306,6 +305,11 @@ export default function VenuePage() {
           )}
         </div>
       )}
+
+      {/* Description */}
+      <div className="mb-6">
+        <p className="text-gray-700 text-lg leading-relaxed">{venue.description}</p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Venue Details */}
