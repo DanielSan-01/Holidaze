@@ -5,6 +5,7 @@ import { VenueCard } from '../components/venue';
 import { PlaneLoader } from '../components/loader';
 import { SearchVenues, FilterVenues } from '../components/search and filters';
 import { HeroSection, SearchResultsHeader, PromoBanner } from '../components/ui';
+import AmenityStoryCards from '../components/ui/AmenityStoryCards';
 import { filterVenues, hasActiveFilters } from '../utils/venueFilters.js';
 import { useAuth } from '../hooks/auth';
 
@@ -169,6 +170,9 @@ function Home() {
           <PromoBanner />
         </div>
       )}
+
+      {/* Amenity Story Cards */}
+      <AmenityStoryCards />
     </div>
   );
 }
