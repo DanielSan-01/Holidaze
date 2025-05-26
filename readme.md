@@ -46,7 +46,6 @@ npm run preview
 - `npm run dev` - Starts Vite development server
 - `npm run build` - Builds for production
 - `npm run preview` - Previews production build locally
-- `npm run lint` - Runs ESLint for code quality
 - `npm run deploy` - Deploys to GitHub Pages
 - `npm run setup` - Runs GitHub project setup
 - `npm run setup-basic` - Runs basic GitHub setup
