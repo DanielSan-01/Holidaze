@@ -79,37 +79,45 @@ export default function BookingCalendar({
       const newCheckIn = date;
       setSelectedDates({ checkIn: newCheckIn, checkOut: null });
       setIsSelectingCheckOut(true);
+      if (onDateChange) {
       onDateChange({
         checkIn: newCheckIn.toISOString().split('T')[0],
         checkOut: ''
       });
+      }
     } else if (isSelectingCheckOut) {
       // Second selection - set check-out
       if (date <= selectedDates.checkIn) {
         // If selected date is before or same as check-in, reset and set as new check-in
         setSelectedDates({ checkIn: date, checkOut: null });
+        if (onDateChange) {
         onDateChange({
           checkIn: date.toISOString().split('T')[0],
           checkOut: ''
         });
+        }
       } else {
         // Valid check-out date
         const newCheckOut = date;
         setSelectedDates({ ...selectedDates, checkOut: newCheckOut });
         setIsSelectingCheckOut(false);
+        if (onDateChange) {
         onDateChange({
           checkIn: selectedDates.checkIn.toISOString().split('T')[0],
           checkOut: newCheckOut.toISOString().split('T')[0]
         });
+        }
       }
     } else {
       // Reset selection
       setSelectedDates({ checkIn: date, checkOut: null });
       setIsSelectingCheckOut(true);
+      if (onDateChange) {
       onDateChange({
         checkIn: date.toISOString().split('T')[0],
         checkOut: ''
       });
+      }
     }
   };
 

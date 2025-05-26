@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
 
+/**
+ * LocationPicker Component - School Project Implementation
+ * 
+ * DESIGN DECISION: Fixed Bergen Location
+ * 
+ * Originally designed to allow users to select any location, but adapted for school project reality:
+ * - Students don't input real venue locations into the API
+ * - Most test data would show "unknown location" or broken addresses
+ * - This creates a poor user experience in demos and presentations
+ * 
+ * SOLUTION: Default all venues to Bergen Sentrum
+ * - Provides consistent, professional-looking location data
+ * - Bergen is the project's target market (Norwegian tourism)
+ * - Maintains location functionality without requiring real user input
+ * - Perfect for academic demonstration purposes
+ * 
+ * FUTURE: In a real application, this would be a full location picker with:
+ * - Google Places API integration
+ * - Address autocomplete
+ * - Geocoding validation
+ */
 const LocationPicker = ({ onLocationSelect, initialLocation = null, className = '' }) => {
-  // Bergen sentrum coordinates
+  // Bergen sentrum coordinates - fixed location for school project
   const bergenSentrum = {
     lat: 60.3913,
     lng: 5.3221,

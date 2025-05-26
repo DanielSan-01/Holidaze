@@ -4,26 +4,26 @@ const ProjectProgress = () => {
   const [overallProgress, setOverallProgress] = useState(0);
   const [userStories, setUserStories] = useState([
     // All Users
-    { id: 1, category: "All Users", story: "View a list of Venues", completed: false },
-    { id: 2, category: "All Users", story: "Search for a specific Venue", completed: false },
-    { id: 3, category: "All Users", story: "View a specific Venue page by id", completed: false },
-    { id: 4, category: "All Users", story: "Register as a customer with a stud.noroff.no email address and password", completed: false },
-    { id: 5, category: "All Users", story: "Register as a Venue Manager with a stud.noroff.no email address and password", completed: false },
-    { id: 6, category: "All Users", story: "View a calendar with available dates for a Venue (with booked dates indicated)", completed: false },
+    { id: 1, category: "All Users", story: "View a list of Venues", completed: true },
+    { id: 2, category: "All Users", story: "Search for a specific Venue", completed: true },
+    { id: 3, category: "All Users", story: "View a specific Venue page by id", completed: true },
+    { id: 4, category: "All Users", story: "Register as a customer with a stud.noroff.no email address and password", completed: true },
+    { id: 5, category: "All Users", story: "Register as a Venue Manager with a stud.noroff.no email address and password", completed: true },
+    { id: 6, category: "All Users", story: "View a calendar with available dates for a Venue (with booked dates indicated)", completed: true },
     
     // Customers
-    { id: 7, category: "Customers", story: "Login and log out once registered", completed: false },
-    { id: 8, category: "Customers", story: "Create a booking at a Venue", completed: false },
-    { id: 9, category: "Customers", story: "View their upcoming bookings", completed: false },
-    { id: 10, category: "Customers", story: "Update their avatar/profile picture", completed: false },
+    { id: 7, category: "Customers", story: "Login and log out once registered", completed: true },
+    { id: 8, category: "Customers", story: "Create a booking at a Venue", completed: true },
+    { id: 9, category: "Customers", story: "View their upcoming bookings", completed: true },
+    { id: 10, category: "Customers", story: "Update their avatar/profile picture", completed: true },
     
     // Venue Managers
-    { id: 11, category: "Venue Managers", story: "Login and log out once registered", completed: false },
-    { id: 12, category: "Venue Managers", story: "Create a Venue", completed: false },
-    { id: 13, category: "Venue Managers", story: "Edit/update a Venue they manage", completed: false },
-    { id: 14, category: "Venue Managers", story: "Delete a Venue they manage", completed: false },
-    { id: 15, category: "Venue Managers", story: "View upcoming bookings made at a Venue they manage", completed: false },
-    { id: 16, category: "Venue Managers", story: "Update their avatar/profile picture", completed: false }
+    { id: 11, category: "Venue Managers", story: "Login and log out once registered", completed: true },
+    { id: 12, category: "Venue Managers", story: "Create a Venue", completed: true },
+    { id: 13, category: "Venue Managers", story: "Edit/update a Venue they manage", completed: true },
+    { id: 14, category: "Venue Managers", story: "Delete a Venue they manage", completed: true },
+    { id: 15, category: "Venue Managers", story: "View upcoming bookings made at a Venue they manage", completed: true },
+    { id: 16, category: "Venue Managers", story: "Update their avatar/profile picture", completed: true }
   ]);
 
   // Project data
@@ -144,7 +144,7 @@ const ProjectProgress = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'holidaze-project-progress.csv';
+    a.download = 'danielsan-01-holidaze-gantt-chart.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -182,20 +182,40 @@ const ProjectProgress = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Holidaze Project Development Timeline
+            Danielsan-01 Gantt Chart for Holidaze
           </h1>
           <p className="text-lg text-gray-600">
-            Track the progress of our React venue booking application
+            <a 
+              href="https://github.com/DanielSan-01/Holidaze" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200"
+            >
+               View Project Repository on GitHub
+            </a>
           </p>
         </div>
 
         {/* Project Info Card */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
           <h3 className="text-xl font-semibold text-blue-900 mb-4">Project Overview</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 text-sm">
+            <div>
+              <span className="font-medium text-blue-800">Developer:</span>
+              <p className="text-blue-700">Danielsan-01</p>
+            </div>
             <div>
               <span className="font-medium text-blue-800">Project:</span>
-              <p className="text-blue-700">React Venue Booking Application</p>
+              <p className="text-blue-700">
+                <a 
+                  href="https://github.com/DanielSan-01/Holidaze/branches" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 font-medium"
+                >
+                  Holidaze - branches
+                </a>
+              </p>
             </div>
             <div>
               <span className="font-medium text-blue-800">Duration:</span>
