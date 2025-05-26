@@ -94,6 +94,8 @@ const CreateVenueForm = () => {
     price: 0,
     maxGuests: 0,
     rating: 0,
+    checkoutTime: '11:00',
+    cancellationPolicy: 48,
     meta: {
       wifi: false,
       parking: false,
@@ -113,6 +115,7 @@ const CreateVenueForm = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [successData, setSuccessData] = useState(null);
+  const [policyWarning, setPolicyWarning] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -230,6 +233,13 @@ const CreateVenueForm = () => {
         )
       }));
     } else {
+      // Check if user is changing default policies
+      if (name === 'checkoutTime' && sanitizedValue !== '11:00') {
+        setPolicyWarning(true);
+      } else if (name === 'cancellationPolicy' && Number(sanitizedValue) !== 48) {
+        setPolicyWarning(true);
+      }
+      
       setFormData(prev => ({
         ...prev,
         [name]: type === 'checkbox' ? checked : (type === 'number' ? Number(sanitizedValue) : sanitizedValue)
@@ -337,6 +347,8 @@ const CreateVenueForm = () => {
       price: 0,
       maxGuests: 0,
       rating: 0,
+      checkoutTime: '11:00',
+      cancellationPolicy: 48,
       meta: {
         wifi: false,
         parking: false,
@@ -563,6 +575,87 @@ const CreateVenueForm = () => {
             </label>
           </div>
         </div>
+
+        {/* Venue Policies */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Checkout Time *
+            </label>
+            <input
+              type="time"
+              name="checkoutTime"
+              value={formData.checkoutTime}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Standard checkout time for guests (default: 11:00 AM)
+            </p>
+            {formErrors.checkoutTime && (
+              <p className="mt-1 text-sm text-red-600">{formErrors.checkoutTime}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Cancellation Policy (hours) *
+            </label>
+            <select
+              name="cancellationPolicy"
+              value={formData.cancellationPolicy}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              required
+            >
+              <option value={24}>24 hours (Flexible)</option>
+              <option value={48}>48 hours (Moderate)</option>
+              <option value={72}>72 hours (Strict)</option>
+              <option value={168}>7 days (Very Strict)</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              How far in advance guests can cancel without penalty
+            </p>
+            {formErrors.cancellationPolicy && (
+              <p className="mt-1 text-sm text-red-600">{formErrors.cancellationPolicy}</p>
+            )}
+          </div>
+        </div>
+
+        {/* API Limitation Warning */}
+        {policyWarning && (
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-amber-800">
+                  API Limitation Notice
+                </h3>
+                <div className="mt-2 text-sm text-amber-700">
+                  <p>
+                    The Noroff API does not support custom checkout times or cancellation policies. 
+                    Your venue will display the default values (Checkout: 11:00 AM, Cancel: 48h notice) 
+                    regardless of your selection here.
+                  </p>
+                </div>
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={() => setPolicyWarning(false)}
+                    className="text-sm text-amber-800 hover:text-amber-900 font-medium"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Media */}
         <div>

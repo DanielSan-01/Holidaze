@@ -1,4 +1,5 @@
 export { default as BookingCalendar } from './BookingCalendar';
+export { default as VenueCalendarModal } from './VenueCalendarModal';
 export { default as BookingCard } from './BookingCard';
 export { default as CancelBooking } from './CancelBooking';
 export { default as BookingReceipt } from './BookingReceipt';

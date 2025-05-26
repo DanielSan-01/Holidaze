@@ -7,6 +7,8 @@ export default function FilterVenues({ onFilterChange, filters = {}, onClearFilt
     maxPrice: '',
     maxGuests: '',
     minRating: '',
+    checkIn: '',
+    checkOut: '',
     wifi: false,
     parking: false,
     breakfast: false,
@@ -16,6 +18,15 @@ export default function FilterVenues({ onFilterChange, filters = {}, onClearFilt
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...localFilters, [key]: value };
+    
+    // Validate date range
+    if (key === 'checkIn' && newFilters.checkOut && value >= newFilters.checkOut) {
+      newFilters.checkOut = ''; // Clear check-out if it's before or same as check-in
+    }
+    if (key === 'checkOut' && newFilters.checkIn && value <= newFilters.checkIn) {
+      return; // Don't allow check-out before or same as check-in
+    }
+    
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
@@ -26,6 +37,8 @@ export default function FilterVenues({ onFilterChange, filters = {}, onClearFilt
       maxPrice: '',
       maxGuests: '',
       minRating: '',
+      checkIn: '',
+      checkOut: '',
       wifi: false,
       parking: false,
       breakfast: false,
@@ -69,6 +82,35 @@ export default function FilterVenues({ onFilterChange, filters = {}, onClearFilt
       {isExpanded && (
         <div className="mt-3 p-4 bg-white border border-gray-200 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Date Range */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Available Dates</label>
+              <div className="flex space-x-2">
+                <div className="flex-1">
+                  <input
+                    type="date"
+                    value={localFilters.checkIn}
+                    onChange={(e) => handleFilterChange('checkIn', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Check-in"
+                  />
+                  <label className="text-xs text-gray-500 mt-1">Check-in</label>
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="date"
+                    value={localFilters.checkOut}
+                    onChange={(e) => handleFilterChange('checkOut', e.target.value)}
+                    min={localFilters.checkIn || new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Check-out"
+                  />
+                  <label className="text-xs text-gray-500 mt-1">Check-out</label>
+                </div>
+              </div>
+            </div>
+
             {/* Price Range */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Price Range ($)</label>

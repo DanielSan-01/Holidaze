@@ -59,6 +59,14 @@ function HotelCard({ hotelData }) {
                         </span>
                     ))}
                 </div>
+                
+                {/* Default Venue Policies */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex justify-between items-center text-xs text-gray-600">
+                        <span>Checkout: 11:00 AM</span>
+                        <span>Cancel: 48h notice</span>
+                    </div>
+                </div>
                 <div className="mt-auto pt-4">
                     <button 
                         className="w-full btn-primary"

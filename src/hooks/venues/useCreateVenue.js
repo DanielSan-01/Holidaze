@@ -73,6 +73,27 @@ export const useCreateVenue = () => {
       errors.rating = 'Rating must be between 0 and 5';
     }
 
+    // Validate checkout time
+    if (!formData.checkoutTime) {
+      errors.checkoutTime = 'Checkout time is required';
+    } else {
+      // Validate time format (HH:MM)
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+      if (!timeRegex.test(formData.checkoutTime)) {
+        errors.checkoutTime = 'Please enter a valid time (HH:MM format)';
+      }
+    }
+
+    // Validate cancellation policy
+    if (!formData.cancellationPolicy) {
+      errors.cancellationPolicy = 'Cancellation policy is required';
+    } else {
+      const validPolicies = [24, 48, 72, 168];
+      if (!validPolicies.includes(parseInt(formData.cancellationPolicy))) {
+        errors.cancellationPolicy = 'Please select a valid cancellation policy';
+      }
+    }
+
     // Validate media URLs
     if (formData.media) {
       formData.media.forEach((item, index) => {
