@@ -197,7 +197,7 @@
 
 :root {
   --background-main: #fafafa; /* Light gray background */
-  --button-main: #eb25a9; /* Tailwind's blue-600 by default */
+  --button-main: #2563eb; /* Tailwind's blue-600 by default */
   --button-main-hover: #1d4ed8; /* Tailwind's blue-700 by default */
   --button-secondary: #3b82f6; /* Tailwind's blue-500 */
   --button-secondary-hover: #2563eb; /* Tailwind's blue-600 */
