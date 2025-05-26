@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://danielostensen.github.io/holidaze",
+  "homepage": "https://danielsan-01.github.io/Holidaze",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

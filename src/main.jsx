@@ -4,10 +4,12 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './styles/styles.css';
 
-// Setup for GitHub Pages with correct basename
+// Dynamic basename for development vs production
+const basename = import.meta.env.DEV ? '/' : '/Holidaze';
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter basename="/Holidaze">
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </React.StrictMode>
