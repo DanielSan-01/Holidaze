@@ -2,10 +2,6 @@
 
 A modern venue booking application built with React, Vite, and Tailwind CSS.
 
-## Live Demo
-
-Visit the live application: [https://danielostensen.github.io/holidaze/](https://danielostensen.github.io/holidaze/)
-
 ## Dependencies
 
 ### Core Dependencies
