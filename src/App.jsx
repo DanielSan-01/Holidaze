@@ -15,6 +15,7 @@ import CreateProfile from './pages/profile/CreateProfile.jsx';
 import MockProfile from './pages/MockProfile.jsx';
 import EditProfile from './pages/EditProfile.jsx';
 import Admin from './pages/Admin.jsx';
+import ProjectProgress from './pages/ProjectProgress.jsx';
 import FourOhFour from './pages/404.jsx';
 
 function App() {
@@ -86,6 +87,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/progress" element={<ProjectProgress />} />
             <Route path="/404" element={<FourOhFour />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
