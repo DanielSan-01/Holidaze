@@ -51,29 +51,15 @@ npm run preview
 - `npm run setup` - Runs GitHub project setup
 - `npm run setup-basic` - Runs basic GitHub setup
 
-## Deployment
-
-### Automatic Deployment
-The project is configured for automatic deployment to GitHub Pages via GitHub Actions. Every push to the `main` branch will trigger a deployment.
-
-### Manual Deployment
-To manually deploy to GitHub Pages:
-```bash
-npm run deploy
-```
-
-## Development
-
-The Vite development server provides:
-- Fast Hot Module Replacement (HMR)
-- Optimized builds
-- Automatic browser refresh
-- Built-in TypeScript support
-- Tailwind CSS processing
-
 ## GitHub Pages Configuration
 
 The project is configured for GitHub Pages deployment with:
 - Base path: `/holidaze/` for production builds
 - Output directory: `dist/`
 - Automatic deployment via GitHub Actions 
+
+### Manual Deployment
+To manually deploy to GitHub Pages:
+```bash
+npm run deploy
+```
