@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthModal } from '../components/auth';
 
 // Mock profile data
 const mockProfile = {
@@ -23,7 +24,7 @@ const mockProfile = {
 
 // Mock venues with detailed booking data for demo
 const mockVenues = [
-  {
+    {
     id: "demo-venue-1",
     name: "Luxury Seaside Resort",
     description: "A beautiful seaside resort with stunning ocean views, private beach access, and world-class amenities. Perfect for romantic getaways or family vacations.",
@@ -47,12 +48,12 @@ const mockVenues = [
       lat: 25.7617,
       lng: -80.1918
     },
-    media: [
-      {
+        media: [
+          {
         url: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=200&fit=crop",
         alt: "Luxury Seaside Resort exterior"
-      }
-    ],
+          }
+        ],
     owner: {
       name: "demo_manager",
       email: "demo.manager@stud.noroff.no",
@@ -68,11 +69,11 @@ const mockVenues = [
       venueManager: true
     },
     bookings: [
-      {
+    {
         id: "booking-1",
         dateFrom: "2025-01-25T00:00:00.000Z",
         dateTo: "2025-01-28T00:00:00.000Z",
-        guests: 4,
+      guests: 4,
         created: "2024-12-01T00:00:00.000Z",
         updated: "2024-12-01T00:00:00.000Z",
         customer: {
@@ -83,18 +84,18 @@ const mockVenues = [
             alt: "Sarah Johnson's avatar"
           }
         },
-        venue: {
+      venue: {
           id: "demo-venue-1",
           name: "Luxury Seaside Resort",
-          media: [
-            {
-              url: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=200&fit=crop",
+        media: [
+          {
+            url: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=200&fit=crop",
               alt: "Luxury Seaside Resort exterior"
             }
           ]
-        }
-      },
-      {
+      }
+    },
+    {
         id: "booking-2",
         dateFrom: "2025-02-10T00:00:00.000Z",
         dateTo: "2025-02-14T00:00:00.000Z",
@@ -107,29 +108,29 @@ const mockVenues = [
           avatar: {
             url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
             alt: "Mike Wilson's avatar"
-          }
+      }
         },
         venue: {
           id: "demo-venue-1",
-          name: "Luxury Seaside Resort",
-          media: [
-            {
-              url: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=200&fit=crop",
-              alt: "Luxury Seaside Resort exterior"
+      name: "Luxury Seaside Resort",
+      media: [
+        {
+          url: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=200&fit=crop",
+          alt: "Luxury Seaside Resort exterior"
             }
           ]
         }
+        }
+      ],
+      _count: {
+        bookings: 23
       }
-    ],
-    _count: {
-      bookings: 23
-    }
-  },
-  {
+    },
+    {
     id: "demo-venue-2",
-    name: "Historic Downtown Loft",
-    description: "Charming loft in the heart of the historic district. Features exposed brick walls, high ceilings, and modern amenities. Walking distance to restaurants and shops.",
-    price: 150,
+      name: "Historic Downtown Loft",
+      description: "Charming loft in the heart of the historic district. Features exposed brick walls, high ceilings, and modern amenities. Walking distance to restaurants and shops.",
+      price: 150,
     maxGuests: 4,
     rating: 4.6,
     created: "2024-02-10T00:00:00.000Z",
@@ -149,12 +150,12 @@ const mockVenues = [
       lat: 32.7765,
       lng: -79.9311
     },
-    media: [
-      {
-        url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=200&fit=crop",
-        alt: "Historic Downtown Loft interior"
-      }
-    ],
+      media: [
+        {
+          url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=200&fit=crop",
+          alt: "Historic Downtown Loft interior"
+        }
+      ],
     owner: {
       name: "demo_manager",
       email: "demo.manager@stud.noroff.no"
@@ -185,17 +186,17 @@ const mockVenues = [
             }
           ]
         }
+        }
+      ],
+      _count: {
+        bookings: 18
       }
-    ],
-    _count: {
-      bookings: 18
-    }
-  },
-  {
+    },
+    {
     id: "demo-venue-3",
-    name: "Mountain View Cabin",
-    description: "Rustic cabin with breathtaking mountain views. Features a cozy fireplace, full kitchen, and outdoor deck. Perfect for nature lovers and hikers.",
-    price: 200,
+      name: "Mountain View Cabin",
+      description: "Rustic cabin with breathtaking mountain views. Features a cozy fireplace, full kitchen, and outdoor deck. Perfect for nature lovers and hikers.",
+      price: 200,
     maxGuests: 6,
     rating: 4.9,
     created: "2024-03-05T00:00:00.000Z",
@@ -215,18 +216,18 @@ const mockVenues = [
       lat: 39.1911,
       lng: -106.8175
     },
-    media: [
-      {
-        url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=200&fit=crop",
-        alt: "Mountain View Cabin exterior"
-      }
-    ],
+      media: [
+        {
+          url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=200&fit=crop",
+          alt: "Mountain View Cabin exterior"
+        }
+      ],
     owner: {
       name: "demo_manager",
       email: "demo.manager@stud.noroff.no"
     },
     bookings: [
-      {
+    {
         id: "booking-4",
         dateFrom: "2025-02-01T00:00:00.000Z",
         dateTo: "2025-02-05T00:00:00.000Z",
@@ -270,19 +271,19 @@ const mockVenues = [
         venue: {
           id: "demo-venue-3",
           name: "Mountain View Cabin",
-          media: [
-            {
+      media: [
+        {
               url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=200&fit=crop",
               alt: "Mountain View Cabin exterior"
             }
           ]
         }
-      }
-    ],
-    _count: {
+        }
+      ],
+      _count: {
       bookings: 15
+      }
     }
-  }
 ];
 
 // Add more venues to reach the 5 venues count
@@ -332,11 +333,11 @@ mockVenues.push(
         customer: {
           name: "lisa_chen",
           email: "lisa.chen@example.com",
-          avatar: {
-            url: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+    avatar: {
+      url: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
             alt: "Lisa Chen's avatar"
           }
-        },
+    },
         venue: {
           id: "demo-venue-4",
           name: "Urban Studio Apartment",
@@ -398,7 +399,7 @@ mockVenues.push(
         customer: {
           name: "robert_taylor",
           email: "robert.taylor@example.com",
-          avatar: {
+    avatar: {
             url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
             alt: "Robert Taylor's avatar"
           }
@@ -424,7 +425,7 @@ mockVenues.push(
         customer: {
           name: "maria_garcia",
           email: "maria.garcia@example.com",
-          avatar: {
+    avatar: {
             url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
             alt: "Maria Garcia's avatar"
           }
@@ -464,7 +465,7 @@ const mockRevenueStats = {
 
 // Revenue Dashboard Component (copied from the real one)
 const RevenueDashboard = ({ revenueStats }) => {
-  return (
+    return (
     <div className="bg-white shadow rounded-lg p-6">
       <h3 className="text-lg font-semibold mb-4">Revenue Dashboard</h3>
       
@@ -472,12 +473,12 @@ const RevenueDashboard = ({ revenueStats }) => {
         {/* Total Upcoming Revenue */}
         <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
           <div className="flex items-center justify-between">
-            <div>
+              <div>
               <p className="text-sm font-medium text-green-600">Total Upcoming Revenue</p>
               <p className="text-2xl font-bold text-green-800">
                 ${revenueStats.totalUpcomingRevenue.toLocaleString()}
-              </p>
-            </div>
+                </p>
+              </div>
             <div className="text-green-500">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -499,8 +500,8 @@ const RevenueDashboard = ({ revenueStats }) => {
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-            </div>
           </div>
+            </div>
         </div>
 
         {/* Average Booking Value */}
@@ -523,21 +524,21 @@ const RevenueDashboard = ({ revenueStats }) => {
         {/* Occupancy Rate */}
         <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200">
           <div className="flex items-center justify-between">
-            <div>
+                    <div>
               <p className="text-sm font-medium text-orange-600">Occupancy Rate</p>
               <p className="text-2xl font-bold text-orange-800">
                 {revenueStats.occupancyRate.toFixed(1)}%
               </p>
-            </div>
+                    </div>
             <div className="text-orange-500">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
               </svg>
+                    </div>
+                  </div>
+                </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
   );
 };
 
@@ -551,17 +552,17 @@ const VenueCard = ({ venue, onClick, showOwnerBadge = false, onViewCalendar }) =
   };
 
   return (
-    <div 
+                <div 
       className="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow relative"
       onClick={() => onClick(venue.id)}
-    >
-      {venue.media?.[0]?.url && (
-        <img 
-          src={venue.media[0].url} 
+                >
+                  {venue.media?.[0]?.url && (
+                    <img
+                      src={venue.media[0].url}
           alt={venue.name}
           className="w-full h-32 object-cover rounded mb-3"
-        />
-      )}
+                    />
+                  )}
       
       <div className="space-y-2">
         <div className="flex justify-between items-start">
@@ -582,37 +583,38 @@ const VenueCard = ({ venue, onClick, showOwnerBadge = false, onViewCalendar }) =
         <div className="flex justify-between items-center">
           <span className="font-semibold text-lg">${venue.price}/night</span>
           <span className="text-sm text-gray-500">
-            {venue._count?.bookings || 0} bookings
-          </span>
-        </div>
-
+                      {venue._count?.bookings || 0} bookings
+                    </span>
+                  </div>
+                  
         {/* Action buttons for venue managers */}
-        <div className="flex space-x-2 mt-3">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
+                  <div className="flex space-x-2 mt-3">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
               alert('Demo: Edit venue functionality');
-            }}
+                      }}
             className="flex-1 bg-blue-500 text-white py-1 px-3 rounded text-sm hover:bg-blue-600 transition-colors"
-          >
+                    >
             Edit
-          </button>
-          <button 
+                    </button>
+                    <button 
             onClick={handleViewCalendar}
-            className="flex-1 bg-gray-500 text-white py-1 px-3 rounded text-sm hover:bg-gray-600 transition-colors"
-          >
+                      className="flex-1 bg-gray-500 text-white py-1 px-3 rounded text-sm hover:bg-gray-600 transition-colors"
+                    >
             Calendar
-          </button>
-        </div>
+                    </button>
+                  </div>
+                </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default function MockProfile() {
   const navigate = useNavigate();
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedVenueForCalendar, setSelectedVenueForCalendar] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Manually created upcoming bookings for demo
   const upcomingBookings = [
@@ -848,6 +850,10 @@ export default function MockProfile() {
     setSelectedVenueForCalendar(null);
   };
 
+  const openRegisterModal = () => {
+    setIsAuthModalOpen(true);
+  };
+
   const formatDateRange = (dateFrom, dateTo) => {
     const checkIn = new Date(dateFrom).toLocaleDateString();
     const checkOut = new Date(dateTo).toLocaleDateString();
@@ -866,36 +872,36 @@ export default function MockProfile() {
       {/* Demo Banner */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg mb-6">
         <div className="flex items-center justify-between">
-          <div>
+            <div>
             <h1 className="text-2xl font-bold mb-2">🎯 Venue Manager Demo Dashboard</h1>
             <p className="text-blue-100">
               Experience the power of our venue management tools. This is a preview of what you'll get as a venue manager.
-            </p>
-          </div>
-          <Link 
-            to="/register" 
+              </p>
+            </div>
+          <button
+            onClick={openRegisterModal}
             className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
           >
             Sign Up Now
-          </Link>
+          </button>
         </div>
-      </div>
+          </div>
 
       {/* Profile Header */}
       <div className="bg-white shadow rounded-lg p-6 mb-6">
         <div className="flex items-center space-x-4">
-          <img 
+            <img
             src={mockProfile.avatar.url} 
             alt={mockProfile.avatar.alt}
-            className="w-20 h-20 rounded-full object-cover"
-          />
+              className="w-20 h-20 rounded-full object-cover"
+            />
           <div className="flex-1">
             <h2 className="text-2xl font-bold">{mockProfile.name}</h2>
             <p className="text-gray-600">{mockProfile.email}</p>
             <p className="text-gray-700 mt-2">{mockProfile.bio}</p>
             <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium mt-2">
               ✓ Venue Manager
-            </span>
+              </span>
           </div>
         </div>
 
@@ -956,7 +962,7 @@ export default function MockProfile() {
           <h3 className="text-lg font-semibold mb-4">Upcoming Bookings for My Venues</h3>
           
           {upcomingBookings.length > 0 ? (
-            <div className="space-y-4">
+          <div className="space-y-4">
               {upcomingBookings.map((booking) => (
               <div 
                 key={booking.id} 
@@ -972,7 +978,7 @@ export default function MockProfile() {
                           className="w-12 h-12 object-cover rounded"
                         />
                       )}
-                      <div>
+                  <div>
                         <h4 className="font-semibold text-blue-600 hover:text-blue-800 cursor-pointer"
                             onClick={() => handleVenueClick(booking.venue.id)}>
                           {booking.venue.name}
@@ -980,27 +986,27 @@ export default function MockProfile() {
                         <p className="text-sm text-gray-600">
                           Guest: {booking.customer?.name || 'Unknown'}
                         </p>
-                      </div>
-                    </div>
+                  </div>
+                  </div>
                     
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Check-in:</span>
                         <p className="font-medium">{new Date(booking.dateFrom).toLocaleDateString()}</p>
-                      </div>
+                </div>
                       <div>
                         <span className="text-gray-500">Check-out:</span>
                         <p className="font-medium">{new Date(booking.dateTo).toLocaleDateString()}</p>
-                      </div>
+              </div>
                       <div>
                         <span className="text-gray-500">Guests:</span>
                         <p className="font-medium">{booking.guests}</p>
-                      </div>
+          </div>
                       <div>
                         <span className="text-gray-500">Nights:</span>
                         <p className="font-medium">{calculateNights(booking.dateFrom, booking.dateTo)}</p>
-                      </div>
-                    </div>
+        </div>
+            </div>
                   </div>
                   
                   <div className="text-right ml-4">
@@ -1010,9 +1016,9 @@ export default function MockProfile() {
                     </p>
                     <p className="text-xs text-green-500 mt-1">✓ Confirmed</p>
                   </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
@@ -1029,12 +1035,12 @@ export default function MockProfile() {
             Join thousands of successful venue managers who use Holidaze to grow their business.
           </p>
           <div className="space-x-4">
-            <Link 
-              to="/register" 
+            <button
+              onClick={openRegisterModal}
               className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
             >
               Sign Up Free
-            </Link>
+            </button>
             <Link 
               to="/venues" 
               className="inline-block border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
@@ -1065,8 +1071,8 @@ export default function MockProfile() {
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">{selectedVenueForCalendar.name}</h2>
                     <p className="text-sm text-gray-600">Demo Booking Calendar</p>
+                    </div>
                   </div>
-                </div>
                 <button
                   onClick={handleCloseCalendar}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -1092,11 +1098,18 @@ export default function MockProfile() {
                 >
                   Sign Up to Access Full Calendar
                 </Link>
-              </div>
+                </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode="register"
+      />
     </div>
   );
 } 

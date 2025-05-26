@@ -133,8 +133,12 @@ export default function SearchVenues({
 
   return (
     <div className="relative mb-6">
+      <label htmlFor="venue-search" className="sr-only">
+        Search venues by name, location, or description
+      </label>
       <div className="relative">
         <input
+          id="venue-search"
           type="text"
           value={searchInput}
           onChange={handleInputChange}
@@ -152,6 +156,8 @@ export default function SearchVenues({
           spellCheck="false"
           autoCorrect="off"
           autoCapitalize="off"
+          aria-describedby={error ? "search-error" : "search-help"}
+          aria-invalid={error ? "true" : "false"}
         />
         
         {/* Search Icon */}
@@ -177,14 +183,24 @@ export default function SearchVenues({
       
       {/* Error message */}
       {error && (
-        <div className="mt-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+        <div 
+          id="search-error"
+          className="mt-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2"
+          role="alert"
+          aria-live="polite"
+        >
           {error}
         </div>
       )}
       
+      {/* Help text */}
+      <div id="search-help" className="sr-only">
+        Search for venues by typing keywords. Results will update as you type.
+      </div>
+      
       {/* Security notice for users */}
       {searchInput.length > 50 && (
-        <div className="mt-2 text-xs text-gray-500">
+        <div className="mt-2 text-xs text-gray-500" aria-live="polite">
           Search queries are limited to 100 characters for security reasons.
         </div>
       )}
