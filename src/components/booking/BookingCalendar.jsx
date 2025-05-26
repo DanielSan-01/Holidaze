@@ -216,6 +216,27 @@ export default function BookingCalendar({
           Now select your check-out date
         </div>
       )}
+
+      {selectedDates.checkIn && selectedDates.checkOut && (
+        <div className="mt-4 pt-3 border-t border-gray-200">
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div className="flex items-center">
+                <svg className="w-4 h-4 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-gray-700">Checkout: 11:00 AM</span>
+              </div>
+              <div className="flex items-center">
+                <svg className="w-4 h-4 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-gray-700">Cancel: 48h notice</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
