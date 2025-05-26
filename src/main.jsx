@@ -4,10 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './styles/styles.css';
 
-// Simple setup for GitHub Pages (no basename needed)
+// Setup for GitHub Pages with correct basename
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/Holidaze">
       <App />
     </BrowserRouter>
   </React.StrictMode>
