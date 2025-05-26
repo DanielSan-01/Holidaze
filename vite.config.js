@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: command === 'build' ? '/holidaze/' : '/', 
+  base: command === 'build' ? '/Holidaze/' : '/', 
   root: '.',
   publicDir: 'public',
   build: {
