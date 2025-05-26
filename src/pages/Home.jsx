@@ -8,6 +8,7 @@ import { HeroSection, SearchResultsHeader, PromoBanner } from '../components/ui'
 import AmenityStoryCards from '../components/ui/AmenityStoryCards';
 import { filterVenues, hasActiveFilters } from '../utils/venueFilters.js';
 import { useAuth } from '../hooks/auth';
+import { AuthModal } from '../components/auth';
 
 function Home() {
   const { user } = useAuth();
@@ -19,6 +20,8 @@ function Home() {
   const [filters, setFilters] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
 
   useEffect(() => {
     fetchHotels()
@@ -55,6 +58,11 @@ function Home() {
 
   const viewAllVenues = () => {
     navigate('/venues');
+  };
+
+  const openAuthModal = (mode) => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
   };
 
   const hasActiveSearch = searchTerm.trim().length > 0;
@@ -167,12 +175,19 @@ function Home() {
       {/* Promo Banner - only show when not logged in */}
       {!user && (
         <div className="px-4 mb-8">
-          <PromoBanner />
+          <PromoBanner onOpenAuthModal={openAuthModal} />
         </div>
       )}
 
       {/* Amenity Story Cards */}
       <AmenityStoryCards />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authMode}
+      />
     </div>
   );
 }
