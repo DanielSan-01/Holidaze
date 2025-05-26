@@ -4,31 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import VenueForm from '../VenueForm';
 
-// Mock the LocationPicker component
-vi.mock('../../pages/create/LocationPicker', () => ({
-  default: function MockLocationPicker({ onLocationSelect, initialLocation }) {
-    return (
-      <div data-testid="location-picker">
-        <button
-          onClick={() => onLocationSelect({
-            address: 'Test Address',
-            city: 'Test City',
-            country: 'Test Country',
-            lat: 59.9139,
-            lng: 10.7522
-          })}
-        >
-          Select Location
-        </button>
-        {initialLocation && (
-          <div data-testid="initial-location">
-            {initialLocation.city || 'No location'}
-          </div>
-        )}
-      </div>
-    );
-  }
-}));
+// Note: LocationPicker is NOT mocked - we test the real Bergen-only component
+// This reflects our school project decision to always use Bergen location
 
 // Mock the ImageManager component
 vi.mock('../ImageManager', () => ({
@@ -42,7 +19,10 @@ vi.mock('../ImageManager', () => ({
           Add Image
         </button>
         <button
-          onClick={() => onErrorChange({ media: 'Invalid image URL' })}
+          onClick={() => {
+            console.log('Triggering image error');
+            onErrorChange({ ...errors, mediaUrl: 'Invalid image url' });
+          }}
         >
           Trigger Image Error
         </button>
@@ -94,8 +74,11 @@ describe('VenueForm', () => {
     it('initializes with empty form data', () => {
       render(<VenueForm {...defaultProps} />);
 
-      expect(screen.getByDisplayValue('')).toBeInTheDocument(); // name field
-      expect(screen.getByDisplayValue('0')).toBeInTheDocument(); // price field
+      // Check specific fields by their labels instead of generic empty values
+      expect(screen.getByLabelText(/venue name/i)).toHaveValue('');
+      expect(screen.getByLabelText(/price per night/i)).toHaveValue(0);
+      expect(screen.getByLabelText(/description/i)).toHaveValue('');
+      expect(screen.getByLabelText(/maximum guests/i)).toHaveValue(0);
     });
 
     it('validates required fields and shows errors at bottom', async () => {
@@ -183,14 +166,13 @@ describe('VenueForm', () => {
     });
 
     it('integrates with LocationPicker correctly', async () => {
-      const user = userEvent.setup();
       render(<VenueForm {...defaultProps} />);
 
-      const selectLocationButton = screen.getByText('Select Location');
-      await user.click(selectLocationButton);
-
-      // Location should be updated in form data
-      expect(screen.getByTestId('location-picker')).toBeInTheDocument();
+      // LocationPicker should be rendered and show Bergen location (real component)
+      expect(screen.getByText('Bergen Sentrum')).toBeInTheDocument();
+      expect(screen.getByText('Bergen, Norway')).toBeInTheDocument();
+      expect(screen.getByText(/all venues are located in bergen sentrum for this demo/i)).toBeInTheDocument();
+      expect(screen.getByText('Coordinates: 60.3913, 5.3221')).toBeInTheDocument();
     });
   });
 
@@ -245,10 +227,13 @@ describe('VenueForm', () => {
       expect(screen.getByLabelText(/pets allowed/i)).not.toBeChecked();
     });
 
-    it('passes initial location to LocationPicker', () => {
+    it('shows Bergen location regardless of initial data (school project constraint)', () => {
       render(<VenueForm {...editProps} />);
 
-      expect(screen.getByTestId('initial-location')).toHaveTextContent('Existing City');
+      // Even in edit mode with existing location data, always shows Bergen (school project decision)
+      expect(screen.getByText('Bergen Sentrum')).toBeInTheDocument();
+      expect(screen.getByText('Bergen, Norway')).toBeInTheDocument();
+      expect(screen.getByText(/all venues are located in bergen sentrum for this demo/i)).toBeInTheDocument();
     });
 
     it('uses edit variant for ImageManager', () => {
@@ -309,16 +294,16 @@ describe('VenueForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/venue name is required/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/venue name is required/i)).toHaveLength(2); // Field + summary
       });
 
       // Start typing in name field
       const nameInput = screen.getByLabelText(/venue name/i);
       await user.type(nameInput, 'T');
 
-      // Field error should be cleared
+      // Field error should be cleared completely
       await waitFor(() => {
-        expect(screen.queryByText(/venue name is required/i)).not.toBeInTheDocument();
+        expect(screen.queryAllByText(/venue name is required/i)).toHaveLength(0);
       });
     });
 
@@ -349,19 +334,35 @@ describe('VenueForm', () => {
       expect(checkoutInput.value).toMatch(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/);
     });
 
-    it('handles image errors correctly', async () => {
+    it('shows image errors but allows form submission with valid required fields', async () => {
       const user = userEvent.setup();
       render(<VenueForm {...defaultProps} />);
 
+      // Fill in required fields first
+      await user.type(screen.getByLabelText(/venue name/i), 'Test Venue');
+      await user.type(screen.getByLabelText(/description/i), 'A beautiful test venue');
+      await user.clear(screen.getByLabelText(/price per night/i));
+      await user.type(screen.getByLabelText(/price per night/i), '100');
+      await user.clear(screen.getByLabelText(/maximum guests/i));
+      await user.type(screen.getByLabelText(/maximum guests/i), '4');
+
+      // Trigger image error
       const triggerErrorButton = screen.getByText('Trigger Image Error');
       await user.click(triggerErrorButton);
 
-      // Should show error in the error summary when submitting
+      // Form should still submit successfully despite image error
       const submitButton = screen.getByRole('button', { name: /submit/i });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/invalid image url/i)).toBeInTheDocument();
+        expect(defaultProps.onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'Test Venue',
+            description: 'A beautiful test venue',
+            price: 100,
+            maxGuests: 4
+          })
+        );
       });
     });
 

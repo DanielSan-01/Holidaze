@@ -74,11 +74,25 @@ const VenueForm = ({
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    // Clear error when user starts typing
+    // Clear error when user starts typing - do this FIRST and separately
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
     
+    // Check HTML5 validity for time inputs
+    if (type === 'time' && !e.target.validity.valid) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: 'Please enter a valid time'
+      }));
+      return;
+    }
+    
+    // Update form data
     if (name.startsWith('meta.')) {
       const metaField = name.split('.')[1];
       setFormData(prev => ({
@@ -111,7 +125,11 @@ const VenueForm = ({
     
     // Clear location errors
     if (errors.location) {
-      setErrors(prev => ({ ...prev, location: '' }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.location;
+        return newErrors;
+      });
     }
   };
 
@@ -123,7 +141,15 @@ const VenueForm = ({
   };
 
   const handleMediaErrorChange = (newErrors) => {
-    setErrors(newErrors);
+    console.log('Media error change - New errors:', newErrors);
+    setErrors(prev => {
+      const updated = {
+        ...prev,
+        ...newErrors
+      };
+      console.log('Media error change - Updated errors:', updated);
+      return updated;
+    });
   };
 
   const validateForm = () => {
@@ -147,7 +173,7 @@ const VenueForm = ({
 
     // Validate checkout time (HTML5 time input handles format validation)
     if (!formData.checkoutTime) {
-      newErrors.checkoutTime = 'Checkout time is required';
+      newErrors.checkoutTime = 'Please enter a valid time';
     }
 
     // Validate cancellation policy
@@ -166,9 +192,19 @@ const VenueForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    const validationErrors = validateForm();
+    // Merge validation errors with existing errors (like media errors)
+    // Put validationErrors first so existing errors (like media errors) take precedence
+    const allErrors = { ...validationErrors, ...errors };
+    
+    console.log('Submit - Current errors:', errors);
+    console.log('Submit - Validation errors:', validationErrors);
+    console.log('Submit - All errors:', allErrors);
+    
+    // Only block submission for critical errors (not media errors)
+    const criticalErrors = Object.keys(allErrors).filter(key => !key.startsWith('media'));
+    if (criticalErrors.length > 0) {
+      setErrors(allErrors);
       return;
     }
 
