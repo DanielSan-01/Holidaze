@@ -30,7 +30,22 @@ export const useProfile = () => {
       });
 
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        const errorData = await res.json().catch(() => ({}));
+        
+        let errorMessage;
+        if (res.status === 404) {
+          errorMessage = 'Profile not found. Please check the username and try again.';
+        } else if (res.status === 401) {
+          errorMessage = 'You are not authorized to view this profile. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You do not have permission to access this profile.';
+        } else if (res.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = errorData.message || 'Failed to load profile. Please try again.';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await res.json();
@@ -79,9 +94,27 @@ export const useProfile = () => {
       });
 
       if (!res.ok) {
-        const errorData = await res.json(); 
+        const errorData = await res.json().catch(() => ({})); 
         console.log('Error:', errorData.errors);
-        throw new Error(`HTTP error! status: ${res.status}`);
+        
+        let errorMessage;
+        if (res.status === 400) {
+          if (errorData.errors && errorData.errors.length > 0) {
+            errorMessage = errorData.errors[0].message;
+          } else {
+            errorMessage = 'Invalid profile data. Please check your information and try again.';
+          }
+        } else if (res.status === 401) {
+          errorMessage = 'You are not authorized to update this profile. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You do not have permission to update this profile.';
+        } else if (res.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = errorData.message || 'Failed to update profile. Please try again.';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await res.json();
@@ -117,7 +150,20 @@ export const useProfile = () => {
       });
 
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        const errorData = await res.json().catch(() => ({}));
+        
+        let errorMessage;
+        if (res.status === 401) {
+          errorMessage = 'You are not authorized to view profiles. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You do not have permission to access this resource.';
+        } else if (res.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = errorData.message || 'Failed to load profiles. Please try again.';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await res.json();
