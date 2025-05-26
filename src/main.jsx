@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './styles/styles.css';
 
-// Simple setup for Netlify (no basename needed)
+// Simple setup for GitHub Pages (no basename needed)
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
