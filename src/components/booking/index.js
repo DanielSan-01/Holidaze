@@ -1,3 +1,5 @@
-export { default as BookingCalendar } from './BookingCalendar.jsx';
-export { default as BookingCard } from './BookingCard.jsx';
-export { default as CancelBooking } from './CancelBooking.jsx'; 
+export { default as BookingCalendar } from './BookingCalendar';
+export { default as BookingCard } from './BookingCard';
+export { default as CancelBooking } from './CancelBooking';
+export { default as BookingReceipt } from './BookingReceipt';
+export { default as CancellationReceipt } from './CancellationReceipt'; 

@@ -22,8 +22,8 @@ const VenueCard = ({ venue, onClick, showOwnerBadge = false, showLastVisited = f
         />
       )}
       
-      <h4 className="font-semibold text-blue-600 hover:text-blue-800">{venue.name}</h4>
-      <p className="text-gray-600 text-sm mb-2">{venue.description}</p>
+      <h4 className="font-semibold text-blue-600 hover:text-blue-800 text-wrap-title">{venue.name}</h4>
+      <p className="text-gray-600 text-sm mb-2 text-wrap-content">{venue.description}</p>
       
       {/* Location Display */}
       {venue.location && (

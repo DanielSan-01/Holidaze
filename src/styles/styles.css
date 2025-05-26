@@ -40,6 +40,49 @@
     @apply text-gray-900;
   }
 
+  .mobile-nav-link {
+    @apply block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-all duration-200 min-h-[48px] flex items-center;
+  }
+
+  .mobile-nav-link-active {
+    @apply bg-blue-50 text-blue-700 border-l-4 border-blue-600;
+  }
+
+  /* Better button scaling for small screens */
+  @media (max-width: 640px) {
+    .btn-primary, .btn-secondary, .btn-outline {
+      @apply px-6 py-3 text-base min-h-[48px] w-full sm:w-auto;
+    }
+    
+    .mobile-nav-link {
+      @apply px-6 py-4 text-lg min-h-[56px];
+    }
+
+    /* Profile page button improvements */
+    .bg-green-500, .bg-blue-500, .bg-gray-500 {
+      @apply px-6 py-3 text-base min-h-[48px] rounded-lg;
+    }
+
+    /* Responsive button groups */
+    .flex.space-x-3 {
+      @apply flex-col space-x-0 space-y-3;
+    }
+    
+    @media (min-width: 640px) {
+      .flex.space-x-3 {
+        @apply flex-row space-y-0;
+        gap: 0.75rem; /* equivalent to space-x-3 */
+      }
+    }
+  }
+
+  /* Ensure touch-friendly targets on mobile */
+  @media (max-width: 768px) {
+    .nav-link {
+      @apply px-3 py-2 min-h-[44px] flex items-center;
+    }
+  }
+
   .btn {
     @apply px-4 py-2 rounded transition-colors;
   }
@@ -102,6 +145,53 @@
 
   .label {
     @apply block text-sm font-medium text-gray-700;
+  }
+
+  /* Text utilities for consistent styling */
+  .text-wrap-title {
+    @apply break-words leading-tight;
+  }
+
+  .text-wrap-content {
+    @apply break-words;
+  }
+
+  .text-wrap-title-clamp {
+    @apply break-words leading-tight;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .text-wrap-content-clamp {
+    @apply break-words;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Line clamp utilities for text truncation */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 

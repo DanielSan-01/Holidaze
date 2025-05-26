@@ -39,15 +39,15 @@ function HotelCard({ hotelData }) {
             </div>
             <div className="p-4 flex flex-col flex-grow">
                 <div className="group relative">
-                    <h3 className="text-xl font-semibold text-gray-800 truncate">
+                    <h3 className="text-xl font-semibold text-gray-800 text-wrap-title-clamp">
                         {hotelData.name}
                     </h3>
-                    <div className="hidden group-hover:block absolute z-10 bg-gray-900 text-white text-sm rounded py-1 px-2 -top-2 transform -translate-y-full">
+                    <div className="hidden group-hover:block absolute z-10 bg-gray-900 text-white text-sm rounded py-1 px-2 -top-2 transform -translate-y-full max-w-xs text-wrap-content">
                         {hotelData.name}
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
                     </div>
                 </div>
-                <p className="text-gray-600 mt-1 truncate">{formatLocation(hotelData.location)}</p>
+                <p className="text-gray-600 mt-1 text-wrap-content-clamp">{formatLocation(hotelData.location)}</p>
                 <div className="mt-2">
                     <span className="text-green-600 font-semibold">${hotelData.price}</span>
                     <span className="text-gray-500 text-sm"> / night</span>

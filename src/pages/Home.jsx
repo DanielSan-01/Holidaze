@@ -4,6 +4,7 @@ import { fetchHotels } from '../api/hotelApi.js';
 import { VenueCard } from '../components/venue';
 import { PlaneLoader } from '../components/loader';
 import { SearchVenues, FilterVenues } from '../components/search and filters';
+import { HeroSection, SearchResultsHeader } from '../components/ui';
 import { filterVenues, hasActiveFilters } from '../utils/venueFilters.js';
 
 function Home() {
@@ -63,10 +64,10 @@ function Home() {
   return (
     <div className="max-w-screen-xl mx-auto">
       {/* Hero Section */}
-      <div className="text-center py-16 px-4">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Holidaze</h1>
-        <p className="text-xl text-gray-600 mb-8">Find your perfect holiday accommodation</p>
-      </div>
+      <HeroSection 
+        title="Welcome to Holidaze"
+        subtitle="Find your perfect holiday accommodation"
+      />
 
       {/* Search and Filter Section */}
       <div className="px-4 mb-8">
@@ -85,22 +86,12 @@ function Home() {
         />
 
         {/* Results Header */}
-        {isFiltering && (
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <p className="text-sm text-gray-600">
-                {filteredHotels.length === 0 ? 'No venues found' : 
-                 `Showing ${filteredHotels.length} of ${hotels.length} venues`}
-              </p>
-            </div>
-            <button
-              onClick={clearAllFilters}
-              className="btn-outline text-sm"
-            >
-              Clear All
-            </button>
-          </div>
-        )}
+        <SearchResultsHeader 
+          count={filteredHotels.length}
+          total={hotels.length}
+          onClear={clearAllFilters}
+          isFiltering={isFiltering}
+        />
       </div>
 
       {/* Venues Section */}

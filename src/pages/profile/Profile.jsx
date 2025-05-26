@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useAuth, useProfile, useVenueRating } from '../../hooks';
+import { useAuth, useProfile, useVenueRating, useBookingReceipt } from '../../hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PlaneLoader } from '../../components/loader';
 import ProfileHeader from './components/ProfileHeader.jsx';
 import ProfileStats from './components/ProfileStats.jsx';
 import VenueCard from './components/VenueCard.jsx';
 import { VenueRating } from '../../components/venue';
-import { CancelBooking } from '../../components/booking';
+import { CancelBooking, CancellationReceipt, BookingReceipt } from '../../components/booking';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -19,16 +19,25 @@ export default function Profile() {
   const [showCancelSuccessModal, setShowCancelSuccessModal] = useState(false);
   const [cancelledBookingDetails, setCancelledBookingDetails] = useState(null);
   const navigate = useNavigate();
+  
+  // Use the booking receipt hook
+  const {
+    showBookingReceipt,
+    newBookingData,
+    bookingVenue,
+    calculateNights,
+    calculateTotal,
+    formatDate,
+    closeReceipt,
+    handleViewBookings
+  } = useBookingReceipt(user, fetchProfile);
 
   useEffect(() => {
     if (user) {
       console.log('Fetching profile for user:', user.name);
       fetchProfile(user.name, { _bookings: true, _venues: true });
       
-      // Handle refresh parameter
-      if (searchParams.get('refresh')) {
-        setSearchParams({});
-      }
+
     }
   }, [user]);
 
@@ -51,11 +60,7 @@ export default function Profile() {
     }
   }, [showVenueSelector]);
 
-  const handleRefresh = () => {
-    if (user) {
-      fetchProfile(user.name, { _bookings: true, _venues: true });
-    }
-  };
+
 
   const handleRetry = () => {
     if (retryAttempts >= 3) {
@@ -147,6 +152,8 @@ export default function Profile() {
     
     console.log(`Booking ${cancelledBookingId} cancelled successfully`);
   };
+
+
 
   if (!user) {
     return (
@@ -245,12 +252,12 @@ export default function Profile() {
                   onClick={() => handleBookingClick(booking)}
                 >
                   <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold text-blue-600 hover:text-blue-800">{booking.venue.name}</h4>
-                      <p className="text-gray-600">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-blue-600 hover:text-blue-800 text-wrap-title">{booking.venue.name}</h4>
+                      <p className="text-gray-600 text-sm">
                         {new Date(booking.dateFrom).toLocaleDateString()} - {new Date(booking.dateTo).toLocaleDateString()}
                       </p>
-                      <p className="text-gray-600">Guests: {booking.guests}</p>
+                      <p className="text-gray-600 text-sm">Guests: {booking.guests}</p>
                       {/* Cancel Link positioned under guests info */}
                       <div onClick={(e) => e.stopPropagation()}>
                         <CancelBooking 
@@ -283,75 +290,64 @@ export default function Profile() {
       {profile.venueManager ? (
         // Venue Manager View: My Venues
         <div className="bg-white shadow rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">My Venues</h3>
-            <div className="flex space-x-3">
-              <button 
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm" 
-                onClick={handleCreateVenue}
-              >
-                + Add New Venue
-              </button>
+          <h3 className="text-lg font-semibold mb-4">My Venues</h3>
+          
+          <div className="flex gap-3 mb-6">
+            <button 
+              className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm" 
+              onClick={handleCreateVenue}
+            >
+              + Add New Venue
+            </button>
 
-              {/* Edit Venue Dropdown */}
-              {ownedVenues.length > 0 && (
-                <div className="relative">
-                  <button 
-                    onClick={toggleVenueSelector}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors text-sm flex items-center"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit Venue
-                  </button>
-                  
-                  {showVenueSelector && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                      <div className="p-2">
-                        <div className="text-sm text-gray-600 mb-2 px-2">Select a venue to edit:</div>
-                        {ownedVenues.map((venue) => (
-                          <button
-                            key={venue.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditVenue(venue.id);
-                            }}
-                            className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded flex items-center space-x-3"
-                          >
-                            {venue.media?.[0]?.url && (
-                              <img 
-                                src={venue.media[0].url} 
-                                alt={venue.name}
-                                className="w-8 h-8 object-cover rounded"
-                              />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium text-gray-900 truncate">
-                                {venue.name}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                ${venue.price}/night
-                              </div>
+            {/* Edit Venue Dropdown */}
+            {ownedVenues.length > 0 && (
+              <div className="relative flex-1">
+                <button 
+                  onClick={toggleVenueSelector}
+                  className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors text-sm flex items-center justify-center"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit Venue
+                </button>
+                
+                {showVenueSelector && (
+                  <div className="absolute left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="p-2">
+                      <div className="text-sm text-gray-600 mb-2 px-2">Select a venue to edit:</div>
+                      {ownedVenues.map((venue) => (
+                        <button
+                          key={venue.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditVenue(venue.id);
+                          }}
+                          className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded flex items-center space-x-3"
+                        >
+                          {venue.media?.[0]?.url && (
+                            <img 
+                              src={venue.media[0].url} 
+                              alt={venue.name}
+                              className="w-8 h-8 object-cover rounded"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-900 truncate">
+                              {venue.name}
                             </div>
-                          </button>
-                        ))}
-                      </div>
+                            <div className="text-xs text-gray-500">
+                              ${venue.price}/night
+                            </div>
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  )}
-                </div>
-              )}
-              
-              <button 
-                onClick={handleRefresh}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors text-sm flex items-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Refresh
-              </button>
-            </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           {ownedVenues.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -437,49 +433,30 @@ export default function Profile() {
 
 
       {/* Cancellation Success Modal */}
-      {showCancelSuccessModal && cancelledBookingDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="text-center">
-              <div className="text-green-500 text-6xl mb-4">✅</div>
-              <h2 className="text-2xl font-bold text-green-600 mb-4">Booking Cancelled!</h2>
-              
-              <div className="bg-gray-50 p-4 rounded mb-4 text-left">
-                <h3 className="font-semibold mb-2">Cancelled Booking</h3>
-                <div className="space-y-1 text-sm">
-                  <p><strong>Venue:</strong> {cancelledBookingDetails.venue.name}</p>
-                  <p><strong>Dates:</strong> {new Date(cancelledBookingDetails.dateFrom).toLocaleDateString()} - {new Date(cancelledBookingDetails.dateTo).toLocaleDateString()}</p>
-                  <p><strong>Guests:</strong> {cancelledBookingDetails.guests}</p>
-                </div>
-              </div>
-              
-              <div className="text-sm text-gray-600 mb-6">
-                <p className="font-medium text-green-600 mb-2">✅ Successfully cancelled</p>
-                <p>These dates are now available for other guests to book.</p>
-                <p className="text-xs mt-2">You will not be charged for this booking.</p>
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => navigate(`/venue/${cancelledBookingDetails.venue.id}`)}
-                  className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                  View Venue
-                </button>
-                <button
-                  onClick={() => {
-                    setShowCancelSuccessModal(false);
-                    setCancelledBookingDetails(null);
-                  }}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CancellationReceipt
+        cancelledBooking={cancelledBookingDetails}
+        isOpen={showCancelSuccessModal}
+        onClose={() => {
+          setShowCancelSuccessModal(false);
+          setCancelledBookingDetails(null);
+        }}
+        onViewVenue={(venueId) => navigate(`/venue/${venueId}`)}
+      />
+
+      {/* Booking Success Receipt Modal */}
+      <BookingReceipt
+        bookingData={newBookingData}
+        venue={bookingVenue}
+        isOpen={showBookingReceipt}
+        onClose={closeReceipt}
+        onViewBookings={handleViewBookings}
+        calculateNights={calculateNights}
+        calculateTotal={calculateTotal}
+        formatDate={formatDate}
+        showViewBookingsButton={false} // Hide since we're already on the bookings page
+        autoRedirect={false}
+        userName={user?.name}
+      />
     </div>
   );
 } 
