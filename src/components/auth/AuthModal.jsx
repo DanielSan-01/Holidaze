@@ -58,6 +58,11 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
     // For other pages, let them stay where they are
   };
 
+  // Sanitize name for API compliance (remove spaces, keep letters, numbers, underscores)
+  const sanitizeName = (name) => {
+    return name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+  };
+
   const validate = () => {
     const errors = {};
     if (mode === 'register') {
@@ -65,8 +70,9 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
       if (!EMAIL_REGEX.test(trimmedEmail)) {
         errors.email = 'Must be a valid stud.noroff.no email';
       }
+      // Allow letters, numbers, spaces, and underscores for user input
       if (!formData.name.match(/^[a-zA-Z0-9_ ]+$/)) {
-        errors.name = 'Only letters, numbers, underscores, and spaces allowed';
+        errors.name = 'Only letters, numbers, spaces, and underscores allowed';
       }
     }
     if (!formData.email.trim()) {
@@ -104,12 +110,13 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
       if (mode === 'login') {
         await loginUser(formData.email.trim(), formData.password, handleSuccessfulAuth);
       } else {
+        const sanitizedName = sanitizeName(formData.name);
         const avatar = formData.avatar ? { url: formData.avatar, alt: `${formData.name}'s avatar` } : undefined;
         const banner = formData.banner ? { url: formData.banner, alt: `${formData.name}'s banner` } : undefined;
         await register(
           formData.email.trim(),
           formData.password,
-          formData.name,
+          sanitizedName,
           formData.bio,
           avatar,
           banner,
@@ -170,7 +177,13 @@ const AuthForm = ({ onClose, mode = 'login' }) => {
               onBlur={handleBlur}
               required
               className={inputClass('name')}
+              placeholder="e.g. Jan Banan"
             />
+            {formData.name && (
+              <div className="text-xs text-gray-500 mt-1">
+                Username will be: <span className="font-mono text-blue-600">{sanitizeName(formData.name)}</span>
+              </div>
+            )}
             {fieldErrors.name && <div className="text-red-500 text-xs mt-1">{fieldErrors.name}</div>}
           </div>
         )}
