@@ -17,7 +17,28 @@ export function useRegister() {
       setIsSubmitting(true);
       const response = await fetch(url, options);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Provide specific error messages based on status code and API response
+        let errorMessage;
+        if (response.status === 400) {
+          if (errorData.errors && errorData.errors.length > 0) {
+            // Use the specific error from the API
+            errorMessage = errorData.errors[0].message;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          } else {
+            errorMessage = 'Invalid registration data. Please check your information and try again.';
+          }
+        } else if (response.status === 409) {
+          errorMessage = 'An account with this email already exists. Please try logging in instead.';
+        } else if (response.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = errorData.message || `Registration failed. Please try again.`;
+        }
+        
+        throw new Error(errorMessage);
       }
       const data = await response.json();
       console.log('Registration successful:', data);
@@ -29,7 +50,18 @@ export function useRegister() {
       });
 
       if (!loginResponse.ok) {
-        throw new Error(`HTTP error! status: ${loginResponse.status}`);
+        const loginErrorData = await loginResponse.json().catch(() => ({}));
+        
+        let loginErrorMessage;
+        if (loginResponse.status === 401) {
+          loginErrorMessage = 'Registration successful, but automatic login failed. Please try logging in manually.';
+        } else if (loginResponse.status === 400) {
+          loginErrorMessage = loginErrorData.message || 'Registration successful, but automatic login failed. Please try logging in manually.';
+        } else {
+          loginErrorMessage = 'Registration successful, but automatic login failed. Please try logging in manually.';
+        }
+        
+        throw new Error(loginErrorMessage);
       }
 
       const loginData = await loginResponse.json();
@@ -46,7 +78,9 @@ export function useRegister() {
       });
 
       if (!apiKeyResponse.ok) {
-        throw new Error(`HTTP error! status: ${apiKeyResponse.status}`);
+        console.warn('Failed to create API key after registration, but registration was successful');
+        // Don't throw error here - registration and login were successful
+        // API key creation failure shouldn't block the user
       }
 
       const apiKeyData = await apiKeyResponse.json();

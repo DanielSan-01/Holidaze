@@ -87,7 +87,26 @@ export function AuthProvider({ children }) {
     const response = await fetch(url, options);
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.message || `HTTP error! status: ${response.status}`);
+      
+      // Provide specific error messages based on status code and API response
+      let errorMessage;
+      if (response.status === 400) {
+        if (err.errors && err.errors.length > 0) {
+          errorMessage = err.errors[0].message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        } else {
+          errorMessage = 'Invalid registration data. Please check your information and try again.';
+        }
+      } else if (response.status === 409) {
+        errorMessage = 'An account with this email already exists. Please try logging in instead.';
+      } else if (response.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else {
+        errorMessage = err.message || 'Registration failed. Please try again.';
+      }
+      
+      throw new Error(errorMessage);
     }
     const data = await response.json();
     // Auto-login after registration

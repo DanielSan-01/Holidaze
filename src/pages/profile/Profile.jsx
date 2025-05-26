@@ -156,7 +156,7 @@ export default function Profile() {
     );
   }
 
-  if (loading) {
+  if (loading || !profile) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <PlaneLoader 
@@ -231,31 +231,6 @@ export default function Profile() {
       ) : (
         // Regular User View
         <>
-          {/* Show venues if they have any, regardless of venue manager status */}
-          {ownedVenues.length > 0 && (
-            <div className="bg-white shadow rounded-lg p-6 mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">My Venues</h3>
-                <button 
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors text-sm" 
-                  onClick={handleCreateVenue}
-                >
-                  + Add New Venue
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {ownedVenues.map((venue) => (
-                  <VenueCard
-                    key={venue.id}
-                    venue={venue}
-                    onClick={handleVenueClick}
-                    showOwnerBadge={true}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* My Previous Visits */}
           {visitedVenues.length > 0 && (
             <div className="bg-white shadow rounded-lg p-6">
@@ -273,17 +248,17 @@ export default function Profile() {
             </div>
           )}
 
-          {/* Show create venue option if no venues and no visits */}
-          {ownedVenues.length === 0 && visitedVenues.length === 0 && (
+          {/* Show message if no visits yet */}
+          {visitedVenues.length === 0 && (
             <div className="bg-white shadow rounded-lg p-6">
               <div className="text-center py-8 text-gray-500">
-                <h3 className="text-lg font-semibold mb-4">Get Started</h3>
-                <p className="mb-4">You haven't created any venues or made any bookings yet.</p>
+                <h3 className="text-lg font-semibold mb-4">No Previous Visits</h3>
+                <p className="mb-4">You haven't made any bookings yet. Start exploring venues to plan your next trip!</p>
                 <button 
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors" 
-                  onClick={handleCreateVenue}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" 
+                  onClick={() => navigate('/venues')}
                 >
-                  + Create Your First Venue
+                  Browse Venues
                 </button>
               </div>
             </div>

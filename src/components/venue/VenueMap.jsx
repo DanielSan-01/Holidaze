@@ -1,16 +1,17 @@
 import React from 'react';
 
 export default function VenueMap({ venue, className = "", height = "h-64" }) {
-  // Bergen centrum coordinates as fallback
+  // Bergen centrum coordinates as fallback - ALWAYS use these for consistency
   const bergenLat = 60.3913;
   const bergenLng = 5.3221;
   
-  // Use venue coordinates if available, otherwise default to Bergen centrum
-  const lat = venue?.location?.lat || bergenLat;
-  const lng = venue?.location?.lng || bergenLng;
+  // For this school project, we ALWAYS use Bergen centrum coordinates
+  // This ensures consistent, professional-looking location data for demos
+  const lat = bergenLat;
+  const lng = bergenLng;
   
-  // Check if we're using fallback coordinates
-  const usingFallback = !venue?.location?.lat || !venue?.location?.lng;
+  // Always using Bergen centrum for this school project
+  const usingFallback = true;
   
   // Create simple Google Maps embed URL (no API key required)
   const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
@@ -25,7 +26,7 @@ export default function VenueMap({ venue, className = "", height = "h-64" }) {
         allowFullScreen=""
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
-        title={`Map of ${venue.name}`}
+        title={`Map of ${venue?.name || 'venue'}`}
         className="rounded-lg w-full h-full"
       />
       
