@@ -2,6 +2,12 @@ import React from 'react';
 import LocationDisplay from './LocationDisplay';
 
 const VenueCardMain = ({ venue, showOwnerBadge = false, showLastVisited = false }) => {
+  // Helper function to truncate text
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
   return (
     <div>
       {/* Header with image and owner badge */}
@@ -28,8 +34,8 @@ const VenueCardMain = ({ venue, showOwnerBadge = false, showLastVisited = false 
         <h4 className="font-semibold text-blue-600 hover:text-blue-800 text-wrap-title">
           {venue.name}
         </h4>
-        <p className="text-gray-600 text-sm mb-2 text-wrap-content">
-          {venue.description}
+        <p className="text-gray-600 text-sm mb-2 line-clamp-3 leading-relaxed">
+          {truncateText(venue.description, 120)}
         </p>
         
         {/* Location Display */}

@@ -88,7 +88,7 @@ export default function FilterVenues({ onFilterChange, filters = {}, onClearFilt
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Date Range */}
             <fieldset className="lg:col-span-2">
-              <legend className="block text-sm font-medium text-gray-700 mb-2">Available Dates</legend>
+      
               <div className="flex space-x-2">
                 <div className="flex-1">
                   <label htmlFor="check-in-date" className="block text-xs text-gray-600 mb-1">Check-in</label>
