@@ -73,54 +73,7 @@ const RevenueDashboard = ({ revenueStats }) => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Top Performing Venue */}
-      {revenueStats.topPerformingVenue && (
-        <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="text-yellow-500">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
-                </svg>
               </div>
-              <div>
-                <p className="text-sm font-medium text-yellow-600">Top Performing Venue</p>
-                <p className="font-semibold text-yellow-800">{revenueStats.topPerformingVenue.name}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-yellow-600">Revenue</p>
-              <p className="font-bold text-yellow-800">
-                ${revenueStats.topPerformingVenue.revenue.toLocaleString()}
-              </p>
-              <p className="text-xs text-yellow-600">
-                {revenueStats.topPerformingVenue.bookingCount} bookings
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Quick Insights */}
-      <div className="p-4 bg-gray-50 rounded-lg">
-        <h4 className="font-medium text-gray-800 mb-2">Quick Insights</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-          <div>
-            • <strong>{revenueStats.totalBookings}</strong> upcoming bookings confirmed
-          </div>
-          <div>
-            • Average stay generates <strong>${revenueStats.averageBookingValue.toFixed(0)}</strong>
-          </div>
-          <div>
-            • {revenueStats.occupancyRate > 70 ? 'High' : revenueStats.occupancyRate > 40 ? 'Moderate' : 'Low'} occupancy rate
-          </div>
-          <div>
-            • Next 30 days: <strong>{Math.round((revenueStats.monthlyRevenue / revenueStats.totalUpcomingRevenue) * 100)}%</strong> of total revenue
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
